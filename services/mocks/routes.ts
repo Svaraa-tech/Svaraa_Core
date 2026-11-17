@@ -1,8 +1,10 @@
 import i18n from '@/i18n';
 import type { ChatIn, ChatOut } from '@/services/api/pending';
 import type { components } from '@/services/api/schema';
-import { NEWS_REGIONS, sampleNews } from './news';
+import { newsFilters, sampleNewsPage } from './news';
+import * as reminders from './reminders';
 import {
+  ackDrillFor,
   authenticate,
   circleOut,
   claimDevice,
@@ -43,8 +45,13 @@ export const CLAIMED_CODE_SUFFIX = '-0000';
 const CLAIM_CODE = /^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
 
 type S = components['schemas'];
-/** `params` holds the values of `{name}` parts of the path, e.g. `{ circle_id: 'h1' }`. */
-export type MockContext = { body: unknown; headers: Headers; params: Record<string, string> };
+/** `params` holds the values of `{name}` parts of the path, e.g. `{ circle_id: 'h1' }`; `query` the `?a=b` part. */
+export type MockContext = {
+  body: unknown;
+  headers: Headers;
+  params: Record<string, string>;
+  query?: URLSearchParams;
+};
 export type MockResult = { status: number; body?: unknown };
 export type MockRoute = {
   method: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
@@ -93,6 +100,19 @@ function inHousehold(ctx: MockContext): { user: MockUser; householdId: string } 
   const household = householdOf(auth.user.id, ctx.params.circle_id ?? '');
   if (!household) return { error: fail(404, 'not_found', 'Household not found') };
   return { user: auth.user, householdId: household.id };
+}
+
+/** The household's reminders on the mock backend. */
+const remindersOf = (householdId: string): reminders.ReminderBox =>
+  setupOf(householdId) ?? { reminders: [], remindersVersion: 1 };
+const zoneOf = (ctx: MockContext) => ctx.headers.get('x-timezone') || 'Asia/Kolkata';
+
+function reminderAction(ctx: MockContext, action: 'pause' | 'resume' | 'renew' | 'delete'): MockResult {
+  const h = inHousehold(ctx);
+  if ('error' in h) return h.error;
+  const out = reminders.actOn(remindersOf(h.householdId), ctx.params.reminder_id ?? '', action);
+  if (out === 'deleted') return NO_CONTENT;
+  return 'code' in out ? fail(out.status, out.code, 'Reminder problem') : { status: 200, body: out };
 }
 
 /** The pendant from `{device_id}`, if it belongs to the signed-in user's household. */
@@ -512,6 +532,103 @@ export const routes: MockRoute[] = [
       return d ? { status: 200, body: d } : fail(404, 'drill_not_found', 'Drill not found');
     },
   },
+  // Reminders (flags.remindersApi): the same rules and limits as the server, times read in this computer's zone.
+  {
+    method: 'GET',
+    path: `${API}/circles/{circle_id}/reminders`,
+    respond: (ctx) => {
+      const h = inHousehold(ctx);
+      if ('error' in h) return h.error;
+      return { status: 200, body: reminders.listOf(remindersOf(h.householdId)) };
+    },
+  },
+  {
+    method: 'POST',
+    path: `${API}/circles/{circle_id}/reminders`,
+    respond: (ctx) => {
+      const h = inHousehold(ctx);
+      if ('error' in h) return h.error;
+      if (setupOf(h.householdId)?.state !== 'active')
+        return fail(409, 'invalid_circle_state', 'The household is not active yet');
+      const out = reminders.createReminder(
+        remindersOf(h.householdId),
+        ctx.body,
+        { reminderId: newId(), householdId: h.householdId, userId: h.user.id },
+        zoneOf(ctx),
+      );
+      return 'code' in out ? fail(out.status, out.code, 'Invalid reminder') : { status: 201, body: out };
+    },
+  },
+  // Listed before /{reminder_id}, which would also match "schedule".
+  {
+    method: 'GET',
+    path: `${API}/circles/{circle_id}/reminders/schedule`,
+    respond: (ctx) => {
+      const h = inHousehold(ctx);
+      if ('error' in h) return h.error;
+      return { status: 200, body: reminders.scheduleOf(remindersOf(h.householdId), ctx.query) };
+    },
+  },
+  {
+    method: 'GET',
+    path: `${API}/circles/{circle_id}/reminders/{reminder_id}`,
+    respond: (ctx) => {
+      const h = inHousehold(ctx);
+      if ('error' in h) return h.error;
+      const r = reminders
+        .listOf(remindersOf(h.householdId))
+        .items.find((x) => x.id === ctx.params.reminder_id);
+      return r ? { status: 200, body: r } : fail(404, 'not_found', 'Reminder not found');
+    },
+  },
+  {
+    method: 'PATCH',
+    path: `${API}/circles/{circle_id}/reminders/{reminder_id}`,
+    respond: (ctx) => {
+      const h = inHousehold(ctx);
+      if ('error' in h) return h.error;
+      const out = reminders.updateReminder(
+        remindersOf(h.householdId),
+        ctx.params.reminder_id ?? '',
+        ctx.body,
+        zoneOf(ctx),
+      );
+      return 'code' in out ? fail(out.status, out.code, 'Invalid reminder') : { status: 200, body: out };
+    },
+  },
+  {
+    method: 'DELETE',
+    path: `${API}/circles/{circle_id}/reminders/{reminder_id}`,
+    respond: (ctx) => reminderAction(ctx, 'delete'),
+  },
+  {
+    method: 'POST',
+    path: `${API}/circles/{circle_id}/reminders/{reminder_id}/pause`,
+    respond: (ctx) => reminderAction(ctx, 'pause'),
+  },
+  {
+    method: 'POST',
+    path: `${API}/circles/{circle_id}/reminders/{reminder_id}/resume`,
+    respond: (ctx) => reminderAction(ctx, 'resume'),
+  },
+  {
+    method: 'POST',
+    path: `${API}/circles/{circle_id}/reminders/{reminder_id}/renew`,
+    respond: (ctx) => reminderAction(ctx, 'renew'),
+  },
+  // C8: answer the drill from the app. Like the server, the mock lets the signed-in member answer.
+  {
+    method: 'POST',
+    path: `${API}/circles/{circle_id}/drills/{drill_id}/ack`,
+    respond: (ctx) => {
+      const h = inHousehold(ctx);
+      if ('error' in h) return h.error;
+      const d = ackDrillFor(h.householdId, ctx.params.drill_id ?? '', h.user.id);
+      if (!d) return fail(404, 'drill_not_found', 'Drill not found');
+      if (d === 'ended') return fail(409, 'drill_not_running', 'The drill is not running');
+      return { status: 200, body: d };
+    },
+  },
   // B2, B3: this phone's push token. Phones only (android, ios).
   {
     method: 'POST',
@@ -530,15 +647,24 @@ export const routes: MockRoute[] = [
       return { status: 200, body: { id: `installation-${auth.user.id}` } satisfies S['InstallationOut'] };
     },
   },
-  // PENDING BACKEND: the top five news stories for a region (world, IN, US, CA), found by an AI search. Not in docs/openapi.json yet.
+  // News (flags.newsApi): sample headlines, filtered and paged the way the server does. Needs sign-in, like the server.
   {
     method: 'GET',
-    path: `${API}/news/{region}`,
-    respond: (ctx) => {
-      const region = NEWS_REGIONS.find((r) => r === ctx.params.region);
-      return region
-        ? { status: 200, body: sampleNews(region) }
-        : fail(404, 'region_not_found', 'Region not found');
+    path: `${API}/news`,
+    respond: ({ headers, query }) => {
+      const auth = authenticate(headers);
+      if ('code' in auth) return fail(401, auth.code, 'Invalid or expired token');
+      const page = sampleNewsPage(query ?? new URLSearchParams());
+      return page ? { status: 200, body: page } : fail(422, 'validation_error', 'Invalid request');
+    },
+  },
+  {
+    method: 'GET',
+    path: `${API}/news/filters`,
+    respond: ({ headers }) => {
+      const auth = authenticate(headers);
+      if ('code' in auth) return fail(401, auth.code, 'Invalid or expired token');
+      return { status: 200, body: newsFilters };
     },
   },
   // Text chat (flags.ai). A fixed sample reply in the app's language; like the real server, no sign-in needed.

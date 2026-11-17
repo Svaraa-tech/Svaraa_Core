@@ -52,9 +52,10 @@ export default function WearerPermissions() {
   }, [refresh]);
 
   const finish = async () => {
-    // On the web nothing can be granted yet: carry on, and the phone asks later. A missing push token must not block that.
-    if (canGrantPermissions) await savePushToken();
-    else await savePushToken().catch(() => undefined);
+    // Saving this phone for alerts must not block setup (Expo Go has no push token; the app saves it again later).
+    await savePushToken().catch((e: unknown) => {
+      if (__DEV__) console.warn('[permissions] could not save this phone for notifications', e);
+    });
     await useHousehold.getState().reachStep(WEARER_STEP.permissions);
     router.replace('/wearer/about');
   };

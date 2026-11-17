@@ -1,28 +1,57 @@
 import { create } from 'zustand';
 import { storage } from '@/services/storage';
-import type { NewsRegion } from '@/services/news/newsApi';
+import {
+  NEWS_CATEGORIES,
+  NEWS_LANGUAGES,
+  type NewsCategory,
+  type NewsLanguage,
+} from '@/services/news/newsApi';
 
-const KEY = 'svaraa.news.region';
+const KEY = 'svaraa.news.filters';
+
+/** 'all' = every category. */
+export type CategoryChoice = NewsCategory | 'all';
+/** 'app' = headlines in the app's language; 'all' = both languages. */
+export type LanguageChoice = NewsLanguage | 'app' | 'all';
 
 type State = {
-  region: NewsRegion;
+  category: CategoryChoice;
+  language: LanguageChoice;
   load(): Promise<void>;
-  setRegion(region: NewsRegion): void;
+  setCategory(category: CategoryChoice): void;
+  setLanguage(language: LanguageChoice): void;
 };
 
-/** Which region the News app shows (worldwide, India, US or Canada), remembered on this device. */
-export const useNewsRegion = create<State>((set) => ({
-  region: 'world',
-  load: async () => {
-    try {
-      const saved = await storage.get(KEY);
-      if (saved === 'world' || saved === 'IN' || saved === 'US' || saved === 'CA') set({ region: saved });
-    } catch {
-      /* keep the default */
-    }
-  },
-  setRegion: (region) => {
-    set({ region });
-    void storage.set(KEY, region).catch(() => undefined);
-  },
-}));
+const isCategory = (v: unknown): v is CategoryChoice =>
+  v === 'all' || NEWS_CATEGORIES.includes(v as NewsCategory);
+const isLanguage = (v: unknown): v is LanguageChoice =>
+  v === 'app' || v === 'all' || NEWS_LANGUAGES.includes(v as NewsLanguage);
+
+/** The News app's category and language, remembered on this device. */
+export const useNewsFilters = create<State>((set, get) => {
+  const save = () =>
+    void storage
+      .set(KEY, JSON.stringify({ category: get().category, language: get().language }))
+      .catch(() => undefined);
+  return {
+    category: 'all',
+    language: 'app',
+    load: async () => {
+      try {
+        const saved = JSON.parse((await storage.get(KEY)) ?? '{}') as Record<string, unknown>;
+        if (isCategory(saved.category)) set({ category: saved.category });
+        if (isLanguage(saved.language)) set({ language: saved.language });
+      } catch {
+        /* keep the defaults */
+      }
+    },
+    setCategory: (category) => {
+      set({ category });
+      save();
+    },
+    setLanguage: (language) => {
+      set({ language });
+      save();
+    },
+  };
+});

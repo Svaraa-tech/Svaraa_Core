@@ -54,7 +54,8 @@
           "isIosBackgroundLocationEnabled": true
         }
       ],
-      "expo-audio"
+      "expo-audio",
+      "expo-web-browser"
     ]
   }
 }

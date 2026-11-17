@@ -19,7 +19,12 @@ export const handlers = routes
     // MSW writes path parameters as :name, docs/openapi.json as {name}.
     verb[r.method](`${env.apiUrl}${r.path.replace(/\{(\w+)\}/g, ':$1')}`, async ({ request, params }) => {
       const body = r.method === 'GET' ? undefined : await request.json().catch(() => undefined);
-      const out = r.respond({ body, headers: request.headers, params: params as Record<string, string> });
+      const out = r.respond({
+        body,
+        headers: request.headers,
+        params: params as Record<string, string>,
+        query: new URL(request.url).searchParams,
+      });
       if (out.body === undefined) return new HttpResponse(null, { status: out.status });
       return HttpResponse.json(out.body as Record<string, unknown>, { status: out.status });
     }),

@@ -1,120 +1,131 @@
-/** Reminder rules with no screen code, so they can be tested on their own. */
+/**
+ * Reminder rules with no screen code, so they can be tested on their own. The form works in the phone's local
+ * date and time; the server stores the rule and sends times back in UTC.
+ */
+import type { Reminder, ReminderIn, ReminderPatch, ReminderRule } from '@/services/reminders/remindersApi';
 
-export type Repeat = 'once' | 'daily' | 'weekdays' | 'custom' | 'interval';
-export type Outcome = { date: string; status: 'confirmed' | 'missed'; at: string; tries?: number };
+/** How often, as the server names it: once, daily, weekdays (Mon to Fri), chosen days, or every few hours. */
+export type Kind = ReminderRule['kind'];
+export const KINDS: Kind[] = ['once', 'daily', 'weekdays', 'days', 'interval'];
 
-export type Reminder = {
-  id: string;
+export type Draft = {
   text: string;
+  /** The first day, YYYY-MM-DD, local. */
+  date: string;
   hour: number;
   minute: number;
-  repeat: Repeat;
-  /** Days of the week for `custom`, 0 = Sunday. */
+  kind: Kind;
+  /** For `days`: 1 = Monday ... 7 = Sunday. */
   days: number[];
-  /** For `interval`: say it every `every` hours, from the start time until the hour `until`. */
-  every?: number;
-  until?: number;
-  /** The day of a `once` reminder, as YYYY-MM-DD. */
-  date?: string;
-  speak: boolean;
-  /** Ask again until the wearer says it is done: up to 3 times, 5 minutes apart. */
-  persist: boolean;
-  tellAdmins: boolean;
-  paused: boolean;
-  /** Who made it: `wearer` or a caregiver's name. */
-  by: string;
-  history: Outcome[];
+  /** For `interval`: every 1 to 12 hours, from the start time until `until` o'clock. */
+  every: number;
+  until: number;
+  /** Ask again until the wearer says done: up to 3 times, 5 minutes apart. */
+  confirm: boolean;
 };
 
-export type Draft = Omit<Reminder, 'id' | 'paused' | 'history' | 'by'>;
+export const MAX_TEXT = 200;
+export const MIN_AHEAD_MIN = 10;
+export const MAX_AHEAD_DAYS = 90;
 
-export const WEEKDAYS = [1, 2, 3, 4, 5];
-
-export const dateKey = (d: Date) =>
-  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-
+const pad = (n: number) => String(n).padStart(2, '0');
+export const dateKey = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 export const addDays = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
-
-/** Is the reminder due on this day? A paused one never is. */
-export function occursOn(r: Reminder, day: Date): boolean {
-  if (r.paused) return false;
-  const dow = day.getDay();
-  if (r.repeat === 'once') return r.date === dateKey(day);
-  if (r.repeat === 'daily' || r.repeat === 'interval') return true;
-  if (r.repeat === 'weekdays') return WEEKDAYS.includes(dow);
-  return r.days.includes(dow);
-}
-
-export const outcomeOn = (r: Reminder, day: Date) => r.history.find((h) => h.date === dateKey(day));
-export const doneOn = (r: Reminder, day: Date) => outcomeOn(r, day)?.status === 'confirmed';
-
-export const minutesOfDay = (r: Pick<Reminder, 'hour' | 'minute'>) => r.hour * 60 + r.minute;
-
-/** The times of day (in minutes) a reminder is said: one, or several for `interval`. */
-export function slots(r: Reminder): number[] {
-  const first = minutesOfDay(r);
-  if (r.repeat !== 'interval' || !r.every) return [first];
-  const out: number[] = [];
-  for (let m = first; m <= (r.until ?? 24) * 60; m += r.every * 60) out.push(m);
-  return out.length ? out : [first];
-}
-
-/** The next time today at or after `mins`, else the last one. */
-export const slotAfter = (r: Reminder, mins: number) => {
-  const all = slots(r);
-  return all.find((m) => m >= mins) ?? all[all.length - 1]!;
+export const dayOf = (key: string) => {
+  const [y, m, d] = key.split('-').map(Number);
+  return new Date(y!, m! - 1, d!);
 };
 
-/** The next day after `from` the reminder is due, within a year, or undefined. */
-export function nextDay(r: Reminder, from: Date): Date | undefined {
-  for (let i = 1; i <= 366; i++) {
-    const d = addDays(from, i);
-    if (occursOn(r, d)) return d;
-  }
-  return undefined;
+/** The first time the draft fires, as a local Date. */
+export const startOf = (d: Pick<Draft, 'date' | 'hour' | 'minute'>) => {
+  const day = dayOf(d.date);
+  day.setHours(d.hour, d.minute, 0, 0);
+  return day;
+};
+
+/** A new draft: 7 PM today, or tomorrow when that is less than 10 minutes away. */
+export function newDraft(now: Date): Draft {
+  const draft: Draft = {
+    text: '',
+    date: dateKey(now),
+    hour: 19,
+    minute: 0,
+    kind: 'daily',
+    days: [],
+    every: 2,
+    until: 21,
+    confirm: true,
+  };
+  return startOf(draft).getTime() - now.getTime() < MIN_AHEAD_MIN * 60_000
+    ? { ...draft, date: dateKey(addDays(now, 1)) }
+    : draft;
 }
 
-export type Tab = 'today' | 'upcoming' | 'done';
-
-/** The reminders for a tab. Today: due today and not yet confirmed. Upcoming: not due today, due later. Done: confirmed today. */
-export function forTab(all: Reminder[], tab: Tab, now: Date): Reminder[] {
-  const list = all.filter((r) => {
-    if (tab === 'done') return doneOn(r, now);
-    if (tab === 'today') return occursOn(r, now) && !outcomeOn(r, now);
-    return !r.paused && !occursOn(r, now) && nextDay(r, now) !== undefined;
-  });
-  const mins = now.getHours() * 60 + now.getMinutes();
-  return list.sort((a, b) => slotAfter(a, mins) - slotAfter(b, mins));
+/** The rule as the server takes it. */
+export function ruleOf(d: Draft): ReminderRule {
+  if (d.kind === 'days') return { kind: 'days', days: [...d.days].sort((a, b) => a - b) };
+  if (d.kind === 'interval') return { kind: 'interval', every_hours: d.every, until: `${pad(d.until)}:00` };
+  return { kind: d.kind };
 }
 
-/** The first reminder today that has not yet happened. */
-export function nextToday(all: Reminder[], now: Date): Reminder | undefined {
-  const mins = now.getHours() * 60 + now.getMinutes();
-  return forTab(all, 'today', now).find((r) => slots(r).some((m) => m >= mins));
-}
+/** The local date and time the server reads in X-Timezone, e.g. 2026-11-20T19:00. */
+export const startsAt = (d: Draft) => `${d.date}T${pad(d.hour)}:${pad(d.minute)}`;
 
-/** A new draft: 7 PM today. */
-export const newDraft = (): Draft => ({
-  text: '',
-  hour: 19,
-  minute: 0,
-  repeat: 'daily',
-  days: [],
-  speak: true,
-  persist: true,
-  tellAdmins: true,
+export const toReminderIn = (d: Draft): ReminderIn => ({
+  text: d.text.trim(),
+  starts_at: startsAt(d),
+  rule: ruleOf(d),
+  repeat_until_confirmed: d.confirm,
 });
 
-export const canSave = (d: Draft) =>
-  d.text.trim().length > 0 &&
-  (d.repeat !== 'custom' || d.days.length > 0) &&
-  (d.repeat !== 'interval' || (!!d.every && (d.until ?? 0) * 60 > d.hour * 60 + d.minute));
+/** The server's rule (a plain object in its answer) read back. */
+export function readRule(r: Reminder): ReminderRule {
+  const raw = (r.rule ?? {}) as Partial<ReminderRule>;
+  const kind = KINDS.includes(raw.kind as Kind) ? (raw.kind as Kind) : 'once';
+  return { kind, days: raw.days ?? null, every_hours: raw.every_hours ?? null, until: raw.until ?? null };
+}
 
-/** Where a draft starts: a `once` reminder is for today if its time is still ahead, else tomorrow. */
-export function withDate(d: Draft, now: Date): Draft {
-  if (d.repeat !== 'once') return { ...d, date: undefined };
-  const later = d.hour * 60 + d.minute > now.getHours() * 60 + now.getMinutes();
-  return { ...d, date: dateKey(later ? now : addDays(now, 1)) };
+/** A saved reminder as a draft, for editing. The day is the next one it fires on. */
+export function fromReminder(r: Reminder): Draft {
+  const rule = readRule(r);
+  const first = new Date(r.starts_at);
+  const next = r.next_due_at ? new Date(r.next_due_at) : first;
+  return {
+    text: r.text,
+    date: dateKey(next),
+    hour: first.getHours(),
+    minute: first.getMinutes(),
+    kind: rule.kind,
+    days: rule.days ?? [],
+    every: rule.every_hours ?? 2,
+    until: rule.until ? Number(rule.until.slice(0, 2)) : 21,
+    confirm: r.repeat_until_confirmed,
+  };
+}
+
+/** Only what changed, as the server's PATCH wants it. The time is sent again only when it was changed. */
+export function patchOf(before: Draft, after: Draft): ReminderPatch {
+  const patch: ReminderPatch = {};
+  if (after.text.trim() !== before.text) patch.text = after.text.trim();
+  if (after.date !== before.date || after.hour !== before.hour || after.minute !== before.minute)
+    patch.starts_at = startsAt(after);
+  if (JSON.stringify(ruleOf(after)) !== JSON.stringify(ruleOf(before))) patch.rule = ruleOf(after);
+  if (after.confirm !== before.confirm) patch.repeat_until_confirmed = after.confirm;
+  return patch;
+}
+
+export type Problem = 'noText' | 'noDays' | 'badWindow' | 'tooSoon' | 'tooFar';
+
+/** Why the draft cannot be saved yet, checked the way the server does, or null. `timeChanged` = check the time. */
+export function problemOf(d: Draft, now: Date, timeChanged = true): Problem | null {
+  if (!d.text.trim()) return 'noText';
+  if (d.kind === 'days' && !d.days.length) return 'noDays';
+  if (d.kind === 'interval' && d.until * 60 <= d.hour * 60 + d.minute) return 'badWindow';
+  if (!timeChanged) return null;
+  const ahead = startOf(d).getTime() - now.getTime();
+  if (ahead < MIN_AHEAD_MIN * 60_000) return 'tooSoon';
+  if (ahead > MAX_AHEAD_DAYS * 86_400_000) return 'tooFar';
+  return null;
 }
 
 /** Step the time by whole 5-minute steps and keep it in a day. */
@@ -123,60 +134,19 @@ export function stepTime(d: { hour: number; minute: number }, byMinutes: number)
   return { hour: Math.floor(total / 60), minute: total % 60 };
 }
 
-/** PENDING BACKEND: sample reminders and a week of results, until the reminders API exists. */
-export function sampleReminders(now: Date): Reminder[] {
-  const day = (n: number) => dateKey(addDays(now, -n));
-  const base = { days: [], speak: true, persist: true, tellAdmins: true, paused: false };
-  return [
-    {
-      ...base,
-      id: 'sample-abc',
-      text: 'Take ABC medicines',
-      hour: 19,
-      minute: 0,
-      repeat: 'daily',
-      by: 'Meera',
-      history: [
-        { date: day(1), status: 'confirmed', at: '19:02' },
-        { date: day(2), status: 'missed', at: '19:15', tries: 3 },
-        { date: day(3), status: 'confirmed', at: '19:04' },
-        { date: day(4), status: 'confirmed', at: '19:01' },
-        { date: day(5), status: 'confirmed', at: '19:07' },
-        { date: day(6), status: 'confirmed', at: '19:03' },
-      ],
-    },
-    {
-      ...base,
-      id: 'sample-walk',
-      text: 'Morning walk',
-      hour: 6,
-      minute: 30,
-      repeat: 'daily',
-      by: 'wearer',
-      history: [{ date: day(0), status: 'confirmed', at: '06:31' }],
-    },
-    {
-      ...base,
-      id: 'sample-water',
-      text: 'Drink water',
-      hour: 9,
-      minute: 0,
-      repeat: 'interval',
-      every: 2,
-      until: 19,
-      by: 'wearer',
-      history: [],
-    },
-    {
-      ...base,
-      id: 'sample-neha',
-      text: 'Call Neha',
-      hour: 17,
-      minute: 0,
-      repeat: 'once',
-      date: dateKey(addDays(now, (6 - now.getDay() + 7) % 7 || 7)),
-      by: 'wearer',
-      history: [],
-    },
-  ];
+/** Move the date by days, between today and 90 days ahead. */
+export function stepDate(date: string, byDays: number, now: Date): string {
+  const today = dayOf(dateKey(now));
+  const next = addDays(dayOf(date), byDays);
+  if (next < today) return dateKey(today);
+  const last = addDays(today, MAX_AHEAD_DAYS);
+  return dateKey(next > last ? last : next);
 }
+
+/** True when the date is today or tomorrow. */
+export const dayWord = (date: Date, now: Date): 'today' | 'tomorrow' | undefined =>
+  dateKey(date) === dateKey(now)
+    ? 'today'
+    : dateKey(date) === dateKey(addDays(now, 1))
+      ? 'tomorrow'
+      : undefined;

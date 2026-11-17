@@ -1,132 +1,141 @@
-import type { NewsItem, NewsOut, NewsRegion } from '@/services/api/pending';
+import type { components } from '@/services/api/schema';
 
-/**
- * PENDING BACKEND: sample stories so the News app has something to show. The real backend finds the top five
- * with an AI web search for the chosen region, so these headlines are made-up placeholders, not real news.
- */
-const SAMPLES: Record<NewsRegion, [string, string, string][]> = {
-  world: [
-    [
-      'Sample: Global health body publishes new guidance on healthy ageing',
-      'A placeholder summary. The real app shows two or three plain sentences about the story here.',
-      'Sample Wire',
-    ],
-    [
-      'Sample: Leaders agree a climate funding plan after long talks',
-      'A placeholder summary. The real app shows two or three plain sentences about the story here.',
-      'Sample Times',
-    ],
-    [
-      'Sample: New study links daily walking to a longer, healthier life',
-      'A placeholder summary. The real app shows two or three plain sentences about the story here.',
-      'Sample Science',
-    ],
-    [
-      'Sample: Markets steady as central banks hold interest rates',
-      'A placeholder summary. The real app shows two or three plain sentences about the story here.',
-      'Sample Business',
-    ],
-    [
-      'Sample: Space agencies confirm the date of the next crewed mission',
-      'A placeholder summary. The real app shows two or three plain sentences about the story here.',
-      'Sample Daily',
-    ],
+type S = components['schemas'];
+type Category = S['CategoryOut']['id'];
+type Language = S['LanguageOut']['id'];
+
+/** The same categories and labels as GET /news/filters on the server. */
+export const newsFilters: S['NewsFiltersOut'] = {
+  categories: [
+    { id: 'general', label: { en: 'Top stories', hi: 'मुख्य ख़बरें' } },
+    { id: 'india', label: { en: 'India', hi: 'भारत' } },
+    { id: 'world', label: { en: 'World', hi: 'दुनिया' } },
+    { id: 'business', label: { en: 'Business', hi: 'व्यापार' } },
+    { id: 'technology', label: { en: 'Technology', hi: 'तकनीक' } },
+    { id: 'sports', label: { en: 'Sports', hi: 'खेल' } },
+    { id: 'entertainment', label: { en: 'Entertainment', hi: 'मनोरंजन' } },
+    { id: 'science', label: { en: 'Science', hi: 'विज्ञान' } },
+    { id: 'health', label: { en: 'Health', hi: 'सेहत' } },
   ],
-  IN: [
-    [
-      'Sample: Government extends free health check-ups for senior citizens',
-      'A placeholder summary. The real app shows two or three plain sentences about the story here.',
-      'Sample India',
-    ],
-    [
-      'Sample: Monsoon session of Parliament begins with a packed agenda',
-      'A placeholder summary. The real app shows two or three plain sentences about the story here.',
-      'Sample Herald',
-    ],
-    [
-      'Sample: Festival travel: railways add extra trains on busy routes',
-      'A placeholder summary. The real app shows two or three plain sentences about the story here.',
-      'Sample Express',
-    ],
-    [
-      'Sample: Cricket team names its squad for the coming series',
-      'A placeholder summary. The real app shows two or three plain sentences about the story here.',
-      'Sample Sports',
-    ],
-    [
-      'Sample: Fuel prices unchanged for another week',
-      'A placeholder summary. The real app shows two or three plain sentences about the story here.',
-      'Sample Business India',
-    ],
-  ],
-  US: [
-    [
-      'Sample: Congress debates a new bill on Medicare costs',
-      'A placeholder summary. The real app shows two or three plain sentences about the story here.',
-      'Sample Post',
-    ],
-    [
-      'Sample: Winter storm warnings issued across several states',
-      'A placeholder summary. The real app shows two or three plain sentences about the story here.',
-      'Sample Weather',
-    ],
-    [
-      'Sample: Job growth beats expectations for the third month',
-      'A placeholder summary. The real app shows two or three plain sentences about the story here.',
-      'Sample Journal',
-    ],
-    [
-      'Sample: Researchers report progress on a new flu vaccine',
-      'A placeholder summary. The real app shows two or three plain sentences about the story here.',
-      'Sample Health',
-    ],
-    [
-      'Sample: Championship game set for Sunday night',
-      'A placeholder summary. The real app shows two or three plain sentences about the story here.',
-      'Sample Sports US',
-    ],
-  ],
-  CA: [
-    [
-      'Sample: Provinces agree to share seniors care funding',
-      'A placeholder summary. The real app shows two or three plain sentences about the story here.',
-      'Sample Globe',
-    ],
-    [
-      'Sample: Cold snap hits the prairies, with shelters open',
-      'A placeholder summary. The real app shows two or three plain sentences about the story here.',
-      'Sample Weather CA',
-    ],
-    [
-      'Sample: Housing starts rise in the largest cities',
-      'A placeholder summary. The real app shows two or three plain sentences about the story here.',
-      'Sample Business CA',
-    ],
-    [
-      'Sample: Hockey season opens with a sold-out night',
-      'A placeholder summary. The real app shows two or three plain sentences about the story here.',
-      'Sample Sports CA',
-    ],
-    [
-      'Sample: New trails open in the national parks',
-      'A placeholder summary. The real app shows two or three plain sentences about the story here.',
-      'Sample Nature',
-    ],
+  languages: [
+    { id: 'en', label: 'English' },
+    { id: 'hi', label: 'हिन्दी' },
   ],
 };
 
-export const NEWS_REGIONS = Object.keys(SAMPLES) as NewsRegion[];
+/**
+ * Made-up placeholder headlines (not real news) so the News app has something to show on the mock backend.
+ * [category, language, title, summary, source]
+ */
+const SAMPLES: [Category, Language, string, string, string][] = [
+  [
+    'general',
+    'en',
+    'Sample: City opens new parks for morning walkers',
+    'A placeholder snippet from the feed.',
+    'Sample Daily',
+  ],
+  [
+    'india',
+    'en',
+    'Sample: Government extends free health check-ups for senior citizens',
+    'A placeholder snippet from the feed.',
+    'Sample India',
+  ],
+  [
+    'india',
+    'hi',
+    'नमूना: वरिष्ठ नागरिकों के लिए मुफ़्त स्वास्थ्य जाँच बढ़ाई गई',
+    'फ़ीड से एक नमूना अंश।',
+    'नमूना समाचार',
+  ],
+  [
+    'world',
+    'en',
+    'Sample: Global health body publishes new guidance on healthy ageing',
+    'A placeholder snippet from the feed.',
+    'Sample Wire',
+  ],
+  ['world', 'hi', 'नमूना: स्वस्थ बुढ़ापे पर नई वैश्विक सलाह जारी', 'फ़ीड से एक नमूना अंश।', 'नमूना वायर'],
+  [
+    'business',
+    'en',
+    'Sample: Markets steady as central banks hold interest rates',
+    'A placeholder snippet from the feed.',
+    'Sample Business',
+  ],
+  ['business', 'hi', 'नमूना: ब्याज दरें स्थिर, बाज़ार में हलचल कम', 'फ़ीड से एक नमूना अंश।', 'नमूना व्यापार'],
+  [
+    'technology',
+    'en',
+    'Sample: New phone settings make text easier to read',
+    'A placeholder snippet from the feed.',
+    'Sample Tech',
+  ],
+  [
+    'sports',
+    'en',
+    'Sample: Cricket team names its squad for the coming series',
+    'A placeholder snippet from the feed.',
+    'Sample Sports',
+  ],
+  ['sports', 'hi', 'नमूना: आगामी सीरीज़ के लिए क्रिकेट टीम घोषित', 'फ़ीड से एक नमूना अंश।', 'नमूना खेल'],
+  [
+    'entertainment',
+    'en',
+    'Sample: Classic film festival returns this weekend',
+    'A placeholder snippet from the feed.',
+    'Sample Screen',
+  ],
+  [
+    'science',
+    'en',
+    'Sample: Space agencies confirm the date of the next crewed mission',
+    'A placeholder snippet from the feed.',
+    'Sample Science',
+  ],
+  [
+    'health',
+    'en',
+    'Sample: New study links daily walking to a longer, healthier life',
+    'A placeholder snippet from the feed.',
+    'Sample Health',
+  ],
+  ['health', 'hi', 'नमूना: रोज़ टहलने से लंबी और सेहतमंद उम्र', 'फ़ीड से एक नमूना अंश।', 'नमूना सेहत'],
+];
 
-export function sampleNews(region: NewsRegion): NewsOut {
+const CATEGORIES = new Set<string>(newsFilters.categories.map((c) => c.id));
+const LANGUAGES = new Set<string>(newsFilters.languages.map((l) => l.id));
+
+/**
+ * GET /news on the mock backend: filtered by category, language and keywords (every word must appear), newest
+ * first, paged with a cursor. Undefined for a filter value the server would refuse (422).
+ */
+export function sampleNewsPage(query: URLSearchParams): S['NewsPageOut'] | undefined {
+  const category = query.get('category');
+  const language = query.get('language');
+  if (category && !CATEGORIES.has(category)) return undefined;
+  if (language && !LANGUAGES.has(language)) return undefined;
+  const words = (query.get('q') ?? '').toLowerCase().split(/\s+/).filter(Boolean);
+  const limit = Math.min(50, Math.max(1, Number(query.get('limit')) || 20));
+  const start = Math.max(0, Number(query.get('cursor')) || 0);
   const now = Date.now();
-  const items: NewsItem[] = SAMPLES[region].map(([title, summary, source], i) => ({
-    id: `${region}-${i + 1}`,
-    rank: i + 1,
+  const all: S['ArticleOut'][] = SAMPLES.map(([cat, lang, title, summary, source], i) => ({
+    id: `00000000-0000-4000-8000-${String(i + 1).padStart(12, '0')}`,
     title,
     summary,
     source,
     url: 'https://example.com/news',
-    published_at: new Date(now - (i + 1) * 47 * 60_000).toISOString(),
-  }));
-  return { region, generated_at: new Date(now).toISOString(), items };
+    image_url: null,
+    category: cat,
+    language: lang,
+    published_at: new Date(now - (i + 1) * 37 * 60_000).toISOString(),
+  })).filter(
+    (a) =>
+      (!category || a.category === category) &&
+      (!language || a.language === language) &&
+      words.every((w) => `${a.title} ${a.summary ?? ''}`.toLowerCase().includes(w)),
+  );
+  const items = all.slice(start, start + limit);
+  return { items, next_cursor: start + limit < all.length ? String(start + limit) : null };
 }

@@ -78,7 +78,7 @@
             }
           },
           "422": {
-            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`",
+            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon`",
             "content": {
               "application/json": {
                 "schema": {
@@ -158,7 +158,7 @@
             }
           },
           "422": {
-            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`",
+            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon`",
             "content": {
               "application/json": {
                 "schema": {
@@ -218,7 +218,7 @@
             }
           },
           "422": {
-            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`",
+            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon`",
             "content": {
               "application/json": {
                 "schema": {
@@ -268,7 +268,7 @@
             }
           },
           "422": {
-            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`",
+            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon`",
             "content": {
               "application/json": {
                 "schema": {
@@ -466,7 +466,7 @@
             }
           },
           "422": {
-            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`",
+            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon`",
             "content": {
               "application/json": {
                 "schema": {
@@ -573,7 +573,7 @@
             }
           },
           "422": {
-            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`",
+            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon`",
             "content": {
               "application/json": {
                 "schema": {
@@ -728,7 +728,7 @@
             }
           },
           "422": {
-            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`",
+            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon`",
             "content": {
               "application/json": {
                 "schema": {
@@ -890,7 +890,7 @@
             }
           },
           "422": {
-            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`",
+            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon`",
             "content": {
               "application/json": {
                 "schema": {
@@ -1066,7 +1066,7 @@
             }
           },
           "422": {
-            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`",
+            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon`",
             "content": {
               "application/json": {
                 "schema": {
@@ -1311,7 +1311,7 @@
             }
           },
           "422": {
-            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`",
+            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon`",
             "content": {
               "application/json": {
                 "schema": {
@@ -1427,7 +1427,7 @@
             }
           },
           "422": {
-            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`",
+            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon`",
             "content": {
               "application/json": {
                 "schema": {
@@ -1592,7 +1592,7 @@
             }
           },
           "422": {
-            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`",
+            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon`",
             "content": {
               "application/json": {
                 "schema": {
@@ -1756,7 +1756,7 @@
             }
           },
           "422": {
-            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`",
+            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon`",
             "content": {
               "application/json": {
                 "schema": {
@@ -1923,7 +1923,7 @@
             }
           },
           "422": {
-            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`",
+            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon`",
             "content": {
               "application/json": {
                 "schema": {
@@ -2442,7 +2442,7 @@
             }
           },
           "422": {
-            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`",
+            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon`",
             "content": {
               "application/json": {
                 "schema": {
@@ -2517,7 +2517,7 @@
             }
           },
           "422": {
-            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`",
+            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon`",
             "content": {
               "application/json": {
                 "schema": {
@@ -2580,7 +2580,7 @@
             }
           },
           "422": {
-            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`",
+            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon`",
             "content": {
               "application/json": {
                 "schema": {
@@ -2670,7 +2670,7 @@
             }
           },
           "422": {
-            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`",
+            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon`",
             "content": {
               "application/json": {
                 "schema": {
@@ -2775,7 +2775,7 @@
             }
           },
           "422": {
-            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`",
+            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon`",
             "content": {
               "application/json": {
                 "schema": {
@@ -2870,7 +2870,7 @@
             }
           },
           "422": {
-            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`",
+            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon`",
             "content": {
               "application/json": {
                 "schema": {
@@ -2958,7 +2958,7 @@
             }
           },
           "422": {
-            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`",
+            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon`",
             "content": {
               "application/json": {
                 "schema": {
@@ -3301,6 +3301,884 @@
           },
           "404": {
             "description": "Not found, or you are not a member: `circle_not_found`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/circles/{circle_id}/reminders": {
+      "get": {
+        "tags": ["reminders"],
+        "summary": "List reminders",
+        "description": "The circle's reminders that still have something to fire (active or paused), soonest first. A reminder whose time has passed is gone from here: there is no done or missed list. `limit` and `count` show how many of the circle's slots are in use, so the app can say \"12 of 50\". Times are UTC.",
+        "operationId": "list_reminders_api_v1_circles__circle_id__reminders_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "circle_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Circle Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReminderListOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ...",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Your role cannot do this: `insufficient_role`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found, or you are not a member: `circle_not_found`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["reminders"],
+        "summary": "Create a reminder (wearer or admin)",
+        "description": "The circle must be `active`. A reminder needs a date **and** a time (`reminder_time_required`), the first occurrence must be at least 10 minutes (`reminder_too_soon`) and at most 90 days (`reminder_too_far_ahead`) from now, and a repeating one runs for at most 90 days (`reminder_runs_too_long`). A circle holds at most 50 active or paused reminders (`409 reminder_limit_reached`, with `details.limit` and `details.count`). Send `X-Timezone` (default `Asia/Kolkata`): `starts_at` is read in that zone and the reminder keeps it.",
+        "operationId": "create_reminder_api_v1_circles__circle_id__reminders_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "circle_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Circle Id"
+            }
+          },
+          {
+            "name": "x-timezone",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "The caller's IANA timezone, e.g. `Asia/Kolkata`. Local times in the request (a reminder's `starts_at`) are read in this zone. Defaults to `Asia/Kolkata` when absent; an unknown name is `400 invalid_timezone`.",
+              "examples": ["Asia/Kolkata"],
+              "title": "X-Timezone"
+            },
+            "description": "The caller's IANA timezone, e.g. `Asia/Kolkata`. Local times in the request (a reminder's `starts_at`) are read in this zone. Defaults to `Asia/Kolkata` when absent; an unknown name is `400 invalid_timezone`."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReminderIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReminderOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ...",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Your role cannot do this: `insufficient_role`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found, or you are not a member: `circle_not_found`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict, e.g. `mobile_number_taken`, `invalid_circle_state`, `contact_limit_reached`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/circles/{circle_id}/reminders/schedule": {
+      "get": {
+        "tags": ["reminders"],
+        "summary": "The times still to come, for the wearer's phone",
+        "description": "Poll this at least every 5 minutes. It lists when the circle's active reminders fire from now to `hours` ahead (default 48, at most 72), in order, in UTC, each with its text. Only the future is listed: a time that has passed is never shown, and nothing records whether it was done. Paused reminders are left out.\n\n`version` changes whenever any reminder is added, edited, paused, resumed, deleted or ends. Send back the version you hold and you get `up_to_date: true` with no items. Do that only while the list you hold still reaches far enough ahead (say at least 24 hours), because the list moves forward with the clock even when no reminder changes; otherwise omit `version` to get the list again.",
+        "operationId": "reminder_schedule_api_v1_circles__circle_id__reminders_schedule_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "circle_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Circle Id"
+            }
+          },
+          {
+            "name": "hours",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 72,
+              "minimum": 1,
+              "default": 48,
+              "title": "Hours"
+            }
+          },
+          {
+            "name": "version",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 64
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "The version you already hold",
+              "title": "Version"
+            },
+            "description": "The version you already hold"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScheduleOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ...",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Your role cannot do this: `insufficient_role`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found, or you are not a member: `circle_not_found`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/circles/{circle_id}/reminders/{reminder_id}": {
+      "get": {
+        "tags": ["reminders"],
+        "summary": "One reminder",
+        "operationId": "get_reminder_api_v1_circles__circle_id__reminders__reminder_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "circle_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Circle Id"
+            }
+          },
+          {
+            "name": "reminder_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Reminder Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReminderOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ...",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Your role cannot do this: `insufficient_role`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found, or you are not a member: `circle_not_found`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["reminders"],
+        "summary": "Edit a reminder (wearer or admin)",
+        "description": "Only the fields you send change. The time rules are checked again when the time, the rule or the end date changes. A new `starts_at` is read in the request's `X-Timezone` and the reminder takes that zone; edits that do not send `starts_at` keep the reminder's zone. Sending `ends_on: null` resets a repeating reminder to the longest allowed run. A reminder that has already ended is gone (`404`).",
+        "operationId": "patch_reminder_api_v1_circles__circle_id__reminders__reminder_id__patch",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "circle_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Circle Id"
+            }
+          },
+          {
+            "name": "reminder_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Reminder Id"
+            }
+          },
+          {
+            "name": "x-timezone",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "The caller's IANA timezone, e.g. `Asia/Kolkata`. Local times in the request (a reminder's `starts_at`) are read in this zone. Defaults to `Asia/Kolkata` when absent; an unknown name is `400 invalid_timezone`.",
+              "examples": ["Asia/Kolkata"],
+              "title": "X-Timezone"
+            },
+            "description": "The caller's IANA timezone, e.g. `Asia/Kolkata`. Local times in the request (a reminder's `starts_at`) are read in this zone. Defaults to `Asia/Kolkata` when absent; an unknown name is `400 invalid_timezone`."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReminderPatchIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReminderOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ...",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Your role cannot do this: `insufficient_role`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found, or you are not a member: `circle_not_found`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict, e.g. `mobile_number_taken`, `invalid_circle_state`, `contact_limit_reached`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["reminders"],
+        "summary": "Delete a reminder (wearer or admin)",
+        "description": "Frees its slot. Its history is kept.",
+        "operationId": "delete_reminder_api_v1_circles__circle_id__reminders__reminder_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "circle_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Circle Id"
+            }
+          },
+          {
+            "name": "reminder_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Reminder Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ...",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Your role cannot do this: `insufficient_role`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found, or you are not a member: `circle_not_found`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/circles/{circle_id}/reminders/{reminder_id}/pause": {
+      "post": {
+        "tags": ["reminders"],
+        "summary": "Pause a reminder (wearer or admin)",
+        "description": "A paused reminder does not fire but keeps its slot: it still counts towards the circle's 50.",
+        "operationId": "pause_reminder_api_v1_circles__circle_id__reminders__reminder_id__pause_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "circle_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Circle Id"
+            }
+          },
+          {
+            "name": "reminder_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Reminder Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReminderOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ...",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Your role cannot do this: `insufficient_role`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found, or you are not a member: `circle_not_found`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict, e.g. `mobile_number_taken`, `invalid_circle_state`, `contact_limit_reached`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/circles/{circle_id}/reminders/{reminder_id}/resume": {
+      "post": {
+        "tags": ["reminders"],
+        "summary": "Resume a paused reminder (wearer or admin)",
+        "description": "A reminder whose time passed while it was paused has ended and is gone (`404`).",
+        "operationId": "resume_reminder_api_v1_circles__circle_id__reminders__reminder_id__resume_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "circle_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Circle Id"
+            }
+          },
+          {
+            "name": "reminder_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Reminder Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReminderOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ...",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Your role cannot do this: `insufficient_role`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found, or you are not a member: `circle_not_found`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict, e.g. `mobile_number_taken`, `invalid_circle_state`, `contact_limit_reached`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/circles/{circle_id}/reminders/{reminder_id}/renew": {
+      "post": {
+        "tags": ["reminders"],
+        "summary": "Run a repeating reminder for another 90 days (wearer or admin)",
+        "description": "Moves the end date to 90 days from today (never earlier than it is). One-offs cannot be renewed (`409 reminder_not_recurring`). A reminder that has already ended is gone (`404`).",
+        "operationId": "renew_reminder_api_v1_circles__circle_id__reminders__reminder_id__renew_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "circle_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Circle Id"
+            }
+          },
+          {
+            "name": "reminder_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Reminder Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReminderOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ...",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Your role cannot do this: `insufficient_role`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found, or you are not a member: `circle_not_found`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict, e.g. `mobile_number_taken`, `invalid_circle_state`, `contact_limit_reached`",
             "content": {
               "application/json": {
                 "schema": {
@@ -4168,7 +5046,7 @@
             }
           },
           "422": {
-            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`",
+            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon`",
             "content": {
               "application/json": {
                 "schema": {
@@ -4179,6 +5057,205 @@
           },
           "429": {
             "description": "Rate limited, e.g. `otp_cooldown`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/news": {
+      "get": {
+        "tags": ["news"],
+        "summary": "Latest headlines",
+        "description": "Newest first. Combine any filters; each narrows the result. `q` matches words in the headline or snippet (every word must appear). Page through with `next_cursor` -> `cursor`. Headlines come from public RSS feeds and refresh about every 15 minutes, so the list can be empty for a minute or two after a fresh deploy.",
+        "operationId": "list_news_api_v1_news_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "general",
+                    "india",
+                    "world",
+                    "business",
+                    "technology",
+                    "sports",
+                    "entertainment",
+                    "science",
+                    "health"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Leave out for all categories",
+              "title": "Category"
+            },
+            "description": "Leave out for all categories"
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": ["en", "hi"],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "`en` or `hi`; leave out for both",
+              "title": "Language"
+            },
+            "description": "`en` or `hi`; leave out for both"
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 100
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Keywords",
+              "title": "Q"
+            },
+            "description": "Keywords"
+          },
+          {
+            "name": "hours",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 168,
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Only stories from the last N hours",
+              "title": "Hours"
+            },
+            "description": "Only stories from the last N hours"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "`next_cursor` of the previous page",
+              "title": "Cursor"
+            },
+            "description": "`next_cursor` of the previous page"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NewsPageOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ...",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/news/filters": {
+      "get": {
+        "tags": ["news"],
+        "summary": "Categories and languages for the filter chips",
+        "description": "Each category has its label in both languages, so the tab can follow the user's language.",
+        "operationId": "filters_api_v1_news_filters_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NewsFiltersOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ...",
             "content": {
               "application/json": {
                 "schema": {
@@ -4902,6 +5979,90 @@
   },
   "components": {
     "schemas": {
+      "ArticleOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary",
+            "description": "Short snippet from the feed, at most 300 characters; not the article text"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "examples": ["The Hindu"]
+          },
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "description": "Link to the full story on the publisher's site; open it in the browser"
+          },
+          "image_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Url"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "general",
+              "india",
+              "world",
+              "business",
+              "technology",
+              "sports",
+              "entertainment",
+              "science",
+              "health"
+            ],
+            "title": "Category"
+          },
+          "language": {
+            "type": "string",
+            "enum": ["en", "hi"],
+            "title": "Language"
+          },
+          "published_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Published At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "summary",
+          "source",
+          "url",
+          "image_url",
+          "category",
+          "language",
+          "published_at"
+        ],
+        "title": "ArticleOut"
+      },
       "CancelCircleIn": {
         "properties": {
           "otp": {
@@ -4967,6 +6128,39 @@
         "type": "object",
         "required": ["to_user_id"],
         "title": "CaretakerTransferIn"
+      },
+      "CategoryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "general",
+              "india",
+              "world",
+              "business",
+              "technology",
+              "sports",
+              "entertainment",
+              "science",
+              "health"
+            ],
+            "title": "Id"
+          },
+          "label": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "propertyNames": {
+              "enum": ["en", "hi"]
+            },
+            "type": "object",
+            "title": "Label",
+            "description": "The name to show, in each language"
+          }
+        },
+        "type": "object",
+        "required": ["id", "label"],
+        "title": "CategoryOut"
       },
       "ChatRequest": {
         "properties": {
@@ -5703,6 +6897,19 @@
             ],
             "title": "Fields",
             "description": "Only on 422: per-field validation problems"
+          },
+          "details": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Details",
+            "description": "Extras for some codes, e.g. `limit` and `count` on `reminder_limit_reached`"
           }
         },
         "type": "object",
@@ -5924,6 +7131,23 @@
         "title": "InviteRefIn",
         "description": "Identify the invite by its token, or by `invite_id` from `GET /me/pending-invites` when the token was lost."
       },
+      "LanguageOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": ["en", "hi"],
+            "title": "Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label",
+            "description": "The language's own name"
+          }
+        },
+        "type": "object",
+        "required": ["id", "label"],
+        "title": "LanguageOut"
+      },
       "LookupOut": {
         "properties": {
           "status": {
@@ -6116,6 +7340,53 @@
         "type": "string",
         "enum": ["active", "pending_approval", "removed"],
         "title": "MemberStatus"
+      },
+      "NewsFiltersOut": {
+        "properties": {
+          "categories": {
+            "items": {
+              "$ref": "#/components/schemas/CategoryOut"
+            },
+            "type": "array",
+            "title": "Categories"
+          },
+          "languages": {
+            "items": {
+              "$ref": "#/components/schemas/LanguageOut"
+            },
+            "type": "array",
+            "title": "Languages"
+          }
+        },
+        "type": "object",
+        "required": ["categories", "languages"],
+        "title": "NewsFiltersOut"
+      },
+      "NewsPageOut": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ArticleOut"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor",
+            "description": "Pass as `cursor` to get the next page; null on the last page"
+          }
+        },
+        "type": "object",
+        "required": ["items", "next_cursor"],
+        "title": "NewsPageOut"
       },
       "OtpIn": {
         "properties": {
@@ -6425,6 +7696,305 @@
         "required": ["refresh_token"],
         "title": "RefreshIn"
       },
+      "ReminderIn": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Text",
+            "description": "Spoken as written",
+            "examples": ["take ABC medicines"]
+          },
+          "starts_at": {
+            "type": "string",
+            "title": "Starts At",
+            "description": "Date **and time**, in the wearer's local time (a value with an offset is converted). A date alone is rejected with `reminder_time_required`. Must be at least 10 minutes and at most 90 days from now.",
+            "examples": ["2026-11-20T19:00"]
+          },
+          "rule": {
+            "$ref": "#/components/schemas/ReminderRuleIn"
+          },
+          "ends_on": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ends On",
+            "description": "Repeating reminders only: the last day it fires. At most 90 days after the first one; defaults to that limit."
+          },
+          "repeat_until_confirmed": {
+            "type": "boolean",
+            "title": "Repeat Until Confirmed",
+            "description": "Up to 3 times, 5 minutes apart, until the wearer says done",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": ["text", "starts_at"],
+        "title": "ReminderIn"
+      },
+      "ReminderListOut": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ReminderOut"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit",
+            "description": "How many active or paused reminders a circle may have"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count",
+            "description": "How many it has now (paused ones count)"
+          }
+        },
+        "type": "object",
+        "required": ["items", "limit", "count"],
+        "title": "ReminderListOut"
+      },
+      "ReminderOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "circle_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Circle Id"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "rule": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Rule"
+          },
+          "timezone": {
+            "type": "string",
+            "title": "Timezone",
+            "description": "The zone `starts_at` was entered in. It fixes which local day a repeating reminder fires on; times below are UTC"
+          },
+          "starts_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Starts At",
+            "description": "The first possible time, in UTC (ends in `Z`). Convert it to the device's timezone to show it"
+          },
+          "ends_on": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ends On",
+            "description": "The last day (in `timezone`) a repeating reminder fires; null for a one-off"
+          },
+          "next_due_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Due At",
+            "description": "When it next fires, in UTC. Null when paused or finished"
+          },
+          "repeat_until_confirmed": {
+            "type": "boolean",
+            "title": "Repeat Until Confirmed"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["active", "paused"],
+            "title": "Status"
+          },
+          "created_by": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created By",
+            "description": "Who created it; look the name up in the circle's members"
+          },
+          "created_via": {
+            "type": "string",
+            "enum": ["app", "voice"],
+            "title": "Created Via"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "circle_id",
+          "text",
+          "rule",
+          "timezone",
+          "starts_at",
+          "ends_on",
+          "next_due_at",
+          "repeat_until_confirmed",
+          "status",
+          "created_by",
+          "created_via",
+          "created_at"
+        ],
+        "title": "ReminderOut"
+      },
+      "ReminderPatchIn": {
+        "properties": {
+          "text": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text"
+          },
+          "starts_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Starts At",
+            "description": "Same rules as when creating",
+            "examples": ["2026-11-20T19:00"]
+          },
+          "rule": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReminderRuleIn"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ends_on": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ends On",
+            "description": "Send `null` to reset a repeating reminder to the longest allowed run (it always has an end date)"
+          },
+          "repeat_until_confirmed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Repeat Until Confirmed"
+          }
+        },
+        "type": "object",
+        "title": "ReminderPatchIn",
+        "description": "Only the fields you send change."
+      },
+      "ReminderRuleIn": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": ["once", "daily", "weekdays", "days", "interval"],
+            "title": "Kind",
+            "description": "`once`, `daily`, `weekdays` (Mon to Fri), `days` (needs `days`), or `interval` (needs `every_hours` and `until`)"
+          },
+          "days": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Days",
+            "description": "Only for `days`: 1 = Monday ... 7 = Sunday",
+            "examples": [[1, 3, 5]]
+          },
+          "every_hours": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Every Hours",
+            "description": "Only for `interval`: 1 to 12",
+            "examples": [2]
+          },
+          "until": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Until",
+            "description": "Only for `interval`: the last time of day, from the time in `starts_at`",
+            "examples": ["19:00"]
+          }
+        },
+        "type": "object",
+        "required": ["kind"],
+        "title": "ReminderRuleIn",
+        "description": "How often it repeats. The time of day comes from `starts_at`."
+      },
       "RunningDrill": {
         "properties": {
           "id": {
@@ -6441,6 +8011,71 @@
         "type": "object",
         "required": ["id", "expires_at"],
         "title": "RunningDrill"
+      },
+      "ScheduleItemOut": {
+        "properties": {
+          "reminder_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Reminder Id"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text",
+            "description": "What to say"
+          },
+          "due_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Due At",
+            "description": "When to fire, in UTC. Key your alarm on `reminder_id` and `due_at`"
+          },
+          "repeat_until_confirmed": {
+            "type": "boolean",
+            "title": "Repeat Until Confirmed",
+            "description": "Up to 3 times, 5 minutes apart, until the wearer says done: the phone's job"
+          }
+        },
+        "type": "object",
+        "required": ["reminder_id", "text", "due_at", "repeat_until_confirmed"],
+        "title": "ScheduleItemOut"
+      },
+      "ScheduleOut": {
+        "properties": {
+          "version": {
+            "type": "string",
+            "title": "Version",
+            "description": "Opaque. Changes whenever any reminder is added, edited, paused, resumed, deleted or ends"
+          },
+          "up_to_date": {
+            "type": "boolean",
+            "title": "Up To Date",
+            "description": "True when you sent this `version` back: `items` is empty and you keep what you hold"
+          },
+          "server_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Server Time",
+            "description": "UTC now on the server, to notice a clock that is off"
+          },
+          "window_end": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Window End",
+            "description": "The list covers from `server_time` to here, in UTC"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ScheduleItemOut"
+            },
+            "type": "array",
+            "title": "Items",
+            "description": "The times still to come, in order. Times that have passed are never listed"
+          }
+        },
+        "type": "object",
+        "required": ["version", "up_to_date", "server_time", "window_end", "items"],
+        "title": "ScheduleOut"
       },
       "SetupConsentIn": {
         "properties": {
@@ -6997,12 +8632,20 @@
       "description": "The practice SOS: the wearer starts it, an admin or viewer acknowledges it."
     },
     {
+      "name": "reminders",
+      "description": "Reminders the wearer's phone speaks through the pendant: create, edit, pause, delete, renew. At most 50 per circle, 10 minutes to 90 days ahead."
+    },
+    {
       "name": "members",
       "description": "Invite codes, the member list with approval, roles and removal."
     },
     {
       "name": "transfers",
       "description": "Hand over a caretaker seat or the wearer role, and cancel a circle. All need the actor's OTP."
+    },
+    {
+      "name": "news",
+      "description": "Top headlines in English and Hindi from public RSS feeds, filterable by category, language and keyword."
     },
     {
       "name": "health",

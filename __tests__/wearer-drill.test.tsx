@@ -10,7 +10,13 @@ import { saveContacts } from '@/services/household/wearerApi';
 import { mockDrillTiming } from '@/services/mocks/db';
 import { DEMO_CODE } from '@/services/mocks/routes';
 import { pendant, resetPendant, SimulatorTransport } from '@/services/pendant';
-import { createWearerHousehold, INDIA, useMockBackend, verifyTestPendant } from '@/test-utils/backend';
+import {
+  createWearerHousehold,
+  INDIA,
+  requests,
+  useMockBackend,
+  verifyTestPendant,
+} from '@/test-utils/backend';
 import { renderApp } from '@/test-utils/render';
 
 const mockReplace = jest.fn();
@@ -62,6 +68,19 @@ describe('C8 · Test your SOS', () => {
     expect(await screen.findByText('No one answered in time', {}, { timeout: 4000 })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Run the drill again' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Finish setup' })).toBeDisabled();
+  });
+
+  it('can be answered from the app, which finishes setup and goes Home', async () => {
+    Object.assign(mockDrillTiming, { ackMs: 60 * 60_000 });
+    await renderApp(<SosDrill />);
+    await act(async () => await fireEvent.press(screen.getByRole('button', { name: 'Run SOS drill' })));
+    await act(
+      async () => await fireEvent.press(screen.getByRole('button', { name: 'I got the drill alert' })),
+    );
+    await flush();
+    expect(requests.some((r) => r.method === 'POST' && r.path.endsWith('/ack'))).toBe(true);
+    expect(useHousehold.getState()).toMatchObject({ hasActiveDevice: true });
+    expect(mockReplace).toHaveBeenCalledWith('/home');
   });
 
   it('starts when the wearer holds the gold dot', async () => {

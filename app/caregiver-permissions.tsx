@@ -35,7 +35,10 @@ export default function CaregiverPermissions() {
   }, [refresh]);
 
   const finish = async () => {
-    await savePushToken();
+    // Saving this phone for alerts must not block setup (Expo Go has no push token; the app saves it again later).
+    await savePushToken().catch((e: unknown) => {
+      if (__DEV__) console.warn('[permissions] could not save this phone for notifications', e);
+    });
     await useHousehold.getState().finishNotifications();
     router.replace('/setup'); // D1 (FE-04) will take over here
   };

@@ -18,6 +18,10 @@ type Flags = {
   notifications: Source;
   /** Svaraa's text chat (POST /chat/). */
   ai: Source;
+  /** Headlines for the News app (GET /news, GET /news/filters). Turned on with EXPO_PUBLIC_REAL_AREAS=newsApi. */
+  newsApi: Source;
+  /** Reminders and the wearer's reminder schedule (/circles/{id}/reminders). EXPO_PUBLIC_REAL_AREAS=remindersApi. */
+  remindersApi: Source;
 };
 
 /**
@@ -38,15 +42,21 @@ export const flags: Flags = {
   household: source('household', 'mock'),
   notifications: source('notifications', 'mock'),
   ai: source('ai', 'mock'),
+  newsApi: source('newsApi', 'mock'),
+  remindersApi: source('remindersApi', 'mock'),
 };
 
 /** Which area an API path belongs to. Paths of no listed area are not switched here. */
-export function areaOf(path: string): 'auth' | 'household' | 'notifications' | 'ai' | undefined {
+export function areaOf(
+  path: string,
+): 'auth' | 'household' | 'notifications' | 'ai' | 'newsApi' | 'remindersApi' | undefined {
   if (path.startsWith('/api/v1/auth/') || path.startsWith('/api/v1/users/')) return 'auth';
   if (path.startsWith('/api/v1/chat/')) return 'ai';
+  if (/^\/api\/v1\/circles\/[^/]+\/reminders(\/|$)/.test(path)) return 'remindersApi';
   // Household setup (the backend calls a household a "circle"): the household, its pendant and Home's setup status.
   if (path.startsWith('/api/v1/circles') || path.startsWith('/api/v1/devices/') || path === '/api/v1/me/home')
     return 'household';
   if (path === '/api/v1/me/installations') return 'notifications';
+  if (path === '/api/v1/news' || path.startsWith('/api/v1/news/')) return 'newsApi';
   return undefined;
 }

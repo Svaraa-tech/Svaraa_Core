@@ -19,3 +19,8 @@ export const requestPermission = async (): Promise<PermissionStatus> =>
 export const openSettings = async (): Promise<void> => undefined;
 /** No push token in the browser until web push is built. The caller uses a mock token (pending backend). */
 export const getDeviceToken = async (): Promise<{ token: string; platform: 'web' } | null> => null;
+/** A browser has no push token, so it never changes. */
+export const onDeviceTokenChange =
+  (_listener: () => void): (() => void) =>
+  () =>
+    undefined;

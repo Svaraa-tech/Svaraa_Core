@@ -43,6 +43,9 @@ export type HouseholdSetup = {
   /** Open invites, newest last. */
   invites: S['MemberInviteOut'][];
   drills: S['DrillOut'][];
+  /** Reminders (services/mocks/reminders.ts) and the schedule version, which changes on every change. */
+  reminders: S['ReminderOut'][];
+  remindersVersion: number;
 };
 
 const fresh = (): Db => ({
@@ -192,6 +195,8 @@ export function createHouseholdFor(
     contacts: [],
     invites: [],
     drills: [],
+    reminders: [],
+    remindersVersion: 1,
   });
   return created;
 }
@@ -314,6 +319,22 @@ export function drillNow(householdId: string, drillId: string, now = Date.now())
     d.acknowledged_by = first.name;
     d.acknowledged_at = new Date(now).toISOString();
   } else if (now >= Date.parse(d.expires_at)) d.status = 'expired';
+  return d;
+}
+
+/** Answer a drill (POST .../ack). Undefined when there is no such drill; `ended` when it is no longer running. */
+export function ackDrillFor(
+  householdId: string,
+  drillId: string,
+  userId: string,
+  now = Date.now(),
+): S['DrillOut'] | 'ended' | undefined {
+  const d = drillNow(householdId, drillId, now);
+  if (!d) return undefined;
+  if (d.status !== 'running') return 'ended';
+  d.status = 'passed';
+  d.acknowledged_by = userId;
+  d.acknowledged_at = new Date(now).toISOString();
   return d;
 }
 

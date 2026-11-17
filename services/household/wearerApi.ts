@@ -204,13 +204,16 @@ export async function createInvite(householdId: string, role: InviteRole): Promi
   return { code: out.code, url: inviteUrl(out.code), role: out.role, expires_at: out.expires_at };
 }
 
+/** The real server names who answered by their account id, which is no name to show. */
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 /** The server's drill in the app's shape: `running` is the app's "waiting"; a cancelled drill counts as expired. */
 const toDrill = (d: S['DrillOut']): DrillOut => ({
   id: d.id,
   status: d.status === 'running' ? 'waiting' : d.status === 'passed' ? 'passed' : 'expired',
   started_at: d.started_at,
   expires_at: d.expires_at,
-  acknowledged_by: d.acknowledged_by,
+  acknowledged_by: d.acknowledged_by && !UUID.test(d.acknowledged_by) ? d.acknowledged_by : null,
 });
 
 /**
@@ -220,6 +223,22 @@ const toDrill = (d: S['DrillOut']): DrillOut => ({
 export async function startDrill(householdId: string): Promise<DrillOut> {
   const id = await realHouseholdId(householdId);
   return toDrill(await call(api.POST('/api/v1/circles/{circle_id}/drills', circle(id))));
+}
+
+/**
+ * C8: answer the drill from the app (POST /circles/{id}/drills/{drill_id}/ack, with the signed-in person's token).
+ * The drill passes and the household becomes protected. A caregiver (admin or viewer) may always answer; the wearer
+ * only while no caregiver is in the household, else `403 forbidden`. `409 drill_not_running` once it ended.
+ */
+export async function acknowledgeDrill(householdId: string, drillId: string): Promise<DrillOut> {
+  const id = await realHouseholdId(householdId);
+  return toDrill(
+    await call(
+      api.POST('/api/v1/circles/{circle_id}/drills/{drill_id}/ack', {
+        params: { path: { circle_id: id, drill_id: drillId } },
+      }),
+    ),
+  );
 }
 
 /** C8: how the drill is going. Ask again every few seconds while it is "waiting". */

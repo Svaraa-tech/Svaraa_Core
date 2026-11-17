@@ -85,7 +85,7 @@ After setting `EXPO_PUBLIC_API_URL` to the Railway dev URL, switch one area at a
 
 ## News (FE-07)
 
-- PENDING BACKEND: `GET /api/v1/news/{region}` (world, IN, US, CA) returning the top five stories (rank, title, two or three plain sentences in the app's language, source, link, published time). The backend should do the AI web search and cache the result (about 15 minutes), so the app holds no search key and every user does not trigger a search. The stories in `services/mocks/news.ts` are made-up placeholders.
+- News: the server has no "top five by region" (US, Canada); the app now shows its categories (Top stories, India, World, Business, ...) and languages instead. `GET /news` gives a short feed snippet, not an AI summary. Article images load from the publisher's site.
 - Decide: should the News app be read aloud through the pendant, and should the region follow the person's country by default? It starts on World wide.
 - The News app is a tile in Apps. The bottom bar stays Chat and Apps only.
 
@@ -109,3 +109,4 @@ After setting `EXPO_PUBLIC_API_URL` to the Railway dev URL, switch one area at a
 - Backend and pendant: store the choices per wearer (apps on or off, quiet hours, "still speak important reminders") so the pendant follows them. The pendant must stop music and news during quiet hours and speak important reminders at a lower volume. SOS stops anything playing.
 - Riddles has a switch (as in wireframe F7) but there is no Riddles app yet.
 - It shows the wearer's first name when known. The wireframe says wearer or admin can open it: caregiver access to another person's choices needs the backend.
+- Reminders: the wearer's phone downloads the schedule every 5 minutes but does not ring yet. Next: set local alarms (expo-notifications) or send the list to the pendant, speak the text, and repeat up to 3 times 5 minutes apart when `repeat_until_confirmed`. The server keeps no done or missed history, so the old "Last 7 days" and "Tell admins if missed" were removed.

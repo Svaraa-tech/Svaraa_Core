@@ -1,39 +1,59 @@
 import { useEffect, useState } from 'react';
-import { Pressable, Switch, View } from 'react-native';
+import { ActivityIndicator, Pressable, Switch, View } from 'react-native';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { useErrorText } from '@/features/auth/useErrorText';
+import { useHousehold } from '@/features/household/store';
 import { IconButton, InfoRow, Pill, useMainPalette } from '@/features/main/palette';
 import { useWearer } from '@/features/wearer/store';
+import { DRAFT_HOUSEHOLD_ID } from '@/services/household/householdApi';
+import {
+  createReminder,
+  deleteReminder,
+  listReminders,
+  pauseReminder,
+  renewReminder,
+  resumeReminder,
+  updateReminder,
+  type Reminder,
+  type ReminderRule,
+} from '@/services/reminders/remindersApi';
 import { Button, Choice, Icon, Input, Text, useTheme } from '@/ui';
 import {
-  addDays,
-  canSave,
-  dateKey,
-  doneOn,
-  forTab,
+  dayOf,
+  dayWord,
+  fromReminder,
+  KINDS,
+  MAX_TEXT,
   newDraft,
-  nextDay,
-  nextToday,
-  occursOn,
-  outcomeOn,
-  slotAfter,
+  patchOf,
+  problemOf,
+  readRule,
+  startOf,
+  stepDate,
   stepTime,
-  withDate,
+  toReminderIn,
   type Draft,
-  type Reminder,
-  type Repeat,
-  type Tab,
+  type Kind,
 } from './logic';
-import { useReminders } from './store';
+import { useReminderSchedule } from './store';
 
 type Screen = { kind: 'list' } | { kind: 'form'; id?: string } | { kind: 'detail'; id: string };
 
-const REPEATS: Repeat[] = ['once', 'daily', 'weekdays', 'custom'];
-const TABS: Tab[] = ['today', 'upcoming', 'done'];
+/** Monday first, as the server numbers them (1 = Monday ... 7 = Sunday). */
+const ISO_DAYS = [1, 2, 3, 4, 5, 6, 7];
 
-/** Reminders app: the list (today, upcoming, done), a form for a new one, and the history of one. */
+/** The household's id once it exists on the server; reminders need an active household. */
+function useHouseholdId() {
+  const id = useHousehold((s) => s.householdId);
+  return id && id !== DRAFT_HOUSEHOLD_ID ? id : undefined;
+}
+
+const listKey = (householdId?: string) => ['reminders', householdId];
+
+/** Reminders app: the household's reminders, a form for a new one, one reminder's page, and the phone's schedule. */
 export function RemindersView() {
   const [screen, setScreen] = useState<Screen>({ kind: 'list' });
-  useEffect(() => void useReminders.getState().load(), []);
   if (screen.kind === 'form') {
     return <Form id={screen.id} back={(id) => setScreen(id ? { kind: 'detail', id } : { kind: 'list' })} />;
   }
@@ -51,43 +71,60 @@ export function RemindersView() {
 
 function useFormat() {
   const { i18n, t } = useTranslation();
-  const time = (h: number, m: number) =>
-    new Intl.DateTimeFormat(i18n.language, { hour: 'numeric', minute: '2-digit' }).format(
-      new Date(2000, 0, 1, h, m),
-    );
-  const short = (h: number, m: number) =>
-    new Intl.DateTimeFormat(
-      i18n.language,
-      m ? { hour: 'numeric', minute: '2-digit' } : { hour: 'numeric' },
-    ).format(new Date(2000, 0, 1, h, m));
-  const weekday = (d: Date, style: 'short' | 'long' = 'short') =>
-    new Intl.DateTimeFormat(i18n.language, { weekday: style }).format(d);
-  const dayName = (dow: number) => weekday(new Date(2000, 0, 2 + dow));
-  const repeatName = (r: Reminder | Draft) =>
-    r.repeat === 'custom'
-      ? [...r.days]
-          .sort((a, b) => a - b)
-          .map(dayName)
-          .join(', ')
-      : t(`reminders.repeat.${r.repeat}`);
-  const clock = (mins: number) => time(Math.floor(mins / 60), mins % 60);
-  /** How often, in words: "Daily", "Mon, Wed" or "Every 2 h · 9 AM to 7 PM". */
-  const when = (r: Reminder) =>
-    r.repeat === 'interval'
-      ? t('reminders.every', {
-          hours: r.every ?? 1,
-          from: short(r.hour, r.minute),
-          to: short(r.until ?? 24, 0),
-        })
-      : repeatName(r);
-  const by = (r: Reminder) => (r.by === 'wearer' ? '' : t('reminders.by', { name: r.by }));
-  const created = (r: Reminder) => (r.by === 'wearer' ? '' : t('reminders.createdBy', { name: r.by }));
-  return { time, short, weekday, dayName, repeatName, when, by, created, clock };
+  const time = (d: Date) =>
+    new Intl.DateTimeFormat(i18n.language, { hour: 'numeric', minute: '2-digit' }).format(d);
+  const clock = (h: number, m: number) => time(new Date(2000, 0, 1, h, m));
+  const dayName = (iso: number) =>
+    new Intl.DateTimeFormat(i18n.language, { weekday: 'short' }).format(new Date(2024, 0, iso)); // 1 Jan 2024 = Mon
+  const date = (d: Date) =>
+    new Intl.DateTimeFormat(i18n.language, { weekday: 'short', day: 'numeric', month: 'short' }).format(d);
+  /** "Today", "Tomorrow" or "Thu 20 Nov". */
+  const day = (d: Date) => {
+    const word = dayWord(d, new Date());
+    return word ? t(`reminders.${word}`) : date(d);
+  };
+  /** "Today, 7:00 PM". */
+  const when = (d: Date) => t('reminders.at', { day: day(d), time: time(d) });
+  /** How often, in words: "Daily", "Mon, Wed, Fri" or "Every 2 h until 9 PM". */
+  const rule = (r: ReminderRule) => {
+    if (r.kind === 'days')
+      return [...(r.days ?? [])]
+        .sort((a, b) => a - b)
+        .map(dayName)
+        .join(', ');
+    if (r.kind === 'interval') {
+      const [h, m] = (r.until ?? '21:00').split(':').map(Number);
+      return t('reminders.every', { hours: r.every_hours ?? 1, until: clock(h!, m!) });
+    }
+    return t(`reminders.kind.${r.kind}`);
+  };
+  return { time, clock, dayName, date, day, when, rule };
 }
 
 function useWearerName() {
   const { t } = useTranslation();
   return useWearer((s) => s.profile?.name)?.split(' ')[0] ?? t('reminders.wearerFallback');
+}
+
+function useReminderList() {
+  const householdId = useHouseholdId();
+  const query = useQuery({
+    queryKey: listKey(householdId),
+    queryFn: () => listReminders(householdId as string),
+    enabled: !!householdId,
+  });
+  return { householdId, ...query };
+}
+
+/** After any change: the list again, and (on the wearer's phone) the schedule. */
+function useAfterChange() {
+  const queryClient = useQueryClient();
+  const householdId = useHouseholdId();
+  const role = useHousehold((s) => s.role);
+  return async () => {
+    await queryClient.invalidateQueries({ queryKey: listKey(householdId) });
+    if (householdId && role === 'wearer') void useReminderSchedule.getState().sync(householdId, true);
+  };
 }
 
 function List({ open, add }: { open: (id: string) => void; add: () => void }) {
@@ -96,32 +133,22 @@ function List({ open, add }: { open: (id: string) => void; add: () => void }) {
   const p = useMainPalette();
   const f = useFormat();
   const name = useWearerName();
-  const items = useReminders((s) => s.items);
-  const [tab, setTab] = useState<Tab>('today');
-  const now = new Date();
-  const mins = now.getHours() * 60 + now.getMinutes();
-  const shown = forTab(items, tab, now);
-  const next = tab === 'today' ? nextToday(items, now) : undefined;
-  const doneToday = tab === 'today' ? forTab(items, 'done', now) : [];
+  const errorText = useErrorText();
+  const role = useHousehold((s) => s.role);
+  const { householdId, data, isPending, isError, error, refetch } = useReminderList();
 
-  const detail = (r: Reminder) => {
-    const later = r.repeat === 'once' && !occursOn(r, now);
-    const day = later && r.date ? `${f.weekday(new Date(`${r.date}T00:00`))} ` : '';
-    const start = r.repeat === 'interval' ? '' : `${day}${f.time(r.hour, r.minute)} · `;
-    return `${start}${f.when(r)}${f.by(r) ? ` · ${f.by(r)}` : ''}`;
-  };
+  if (!householdId) return <Text style={{ color: p.muted }}>{t('reminders.needsSetup')}</Text>;
+
   const row = (r: Reminder) => {
+    const next = r.next_due_at ? new Date(r.next_due_at) : undefined;
+    const detail = [next ? f.when(next) : '', f.rule(readRule(r))].filter(Boolean).join(' · ');
     const right =
-      tab === 'done' ? (
-        <Pill label={t('reminders.confirmed')} tone="good" />
-      ) : tab === 'upcoming' ? (
-        <Pill label={f.weekday(nextDay(r, now) ?? now)} />
-      ) : r.id === next?.id ? (
-        <Pill label={t('reminders.next')} tone="plum" />
-      ) : (
-        <Pill label={f.short(Math.floor(slotAfter(r, mins) / 60), slotAfter(r, mins) % 60)} />
-      );
-    return <InfoRow key={r.id} title={r.text} detail={detail(r)} right={right} onPress={() => open(r.id)} />;
+      r.status === 'paused' ? (
+        <Pill label={t('reminders.paused')} tone="warn" />
+      ) : next ? (
+        <Pill label={f.time(next)} />
+      ) : undefined;
+    return <InfoRow key={r.id} title={r.text} detail={detail} right={right} onPress={() => open(r.id)} />;
   };
 
   return (
@@ -132,29 +159,22 @@ function List({ open, add }: { open: (id: string) => void; add: () => void }) {
         </Text>
         <IconButton icon="plus" label={t('reminders.new')} onPress={add} />
       </View>
-      <Choice<Tab>
-        label={t('reminders.tabs')}
-        value={tab}
-        onChange={setTab}
-        options={TABS.map((id) => ({ id, label: t(`reminders.tab.${id}`) }))}
-      />
-      {shown.length ? shown.map(row) : <Text style={{ color: p.muted }}>{t(`reminders.empty.${tab}`)}</Text>}
-      {doneToday.length ? (
-        <>
-          <Text variant="kicker" style={{ color: p.gold }}>
-            {t('reminders.doneToday')}
-          </Text>
-          {doneToday.map((r) => (
-            <InfoRow
-              key={r.id}
-              title={r.text}
-              detail={t('reminders.confirmedAt', { time: f.time(r.hour, r.minute) })}
-              right={<Pill label={t('reminders.confirmed')} tone="good" />}
-              onPress={() => open(r.id)}
-            />
-          ))}
-        </>
+      {data ? (
+        <Text variant="bodySm" style={{ color: p.muted }}>
+          {t('reminders.count', { used: data.count, limit: data.limit })}
+        </Text>
       ) : null}
+      {isPending ? <ActivityIndicator color={p.plum} /> : null}
+      {isError ? (
+        <View style={{ gap: theme.space[2] }}>
+          <Text tone="safety" accessibilityRole="alert">
+            {errorText(error)}
+          </Text>
+          <Button label={t('reminders.retry')} variant="secondary" onPress={() => void refetch()} fullWidth />
+        </View>
+      ) : null}
+      {data && !data.items.length ? <Text style={{ color: p.muted }}>{t('reminders.empty')}</Text> : null}
+      {data?.items.map(row)}
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={t('reminders.new')}
@@ -175,7 +195,62 @@ function List({ open, add }: { open: (id: string) => void; add: () => void }) {
         <Icon name="plus" size={18} color={p.plum} />
         <Text style={{ color: p.plum, fontWeight: '600' }}>{t('reminders.new')}</Text>
       </Pressable>
+      {role === 'wearer' ? <PhoneSchedule householdId={householdId} /> : null}
       <Text style={{ color: p.muted }}>{t('reminders.hint')}</Text>
+    </View>
+  );
+}
+
+/** The wearer's phone: the reminders coming up in the next 48 hours, checked every 5 minutes, and "Check now". */
+function PhoneSchedule({ householdId }: { householdId: string }) {
+  const { t } = useTranslation();
+  const theme = useTheme();
+  const p = useMainPalette();
+  const f = useFormat();
+  const errorText = useErrorText();
+  const { items, checkedAt, checking, error } = useReminderSchedule();
+  return (
+    <View
+      style={{
+        backgroundColor: p.card,
+        borderWidth: 1,
+        borderColor: p.line,
+        borderRadius: 15,
+        padding: 14,
+        gap: theme.space[2],
+      }}
+    >
+      <Text variant="kicker" style={{ color: p.gold }}>
+        {t('reminders.schedule.title')}
+      </Text>
+      <Text variant="bodySm" style={{ color: p.muted }} accessibilityLiveRegion="polite">
+        {checkedAt
+          ? t('reminders.schedule.checked', { time: f.time(new Date(checkedAt)) })
+          : t('reminders.schedule.notYet')}
+      </Text>
+      {items.slice(0, 5).map((i) => (
+        <InfoRow key={`${i.reminder_id}-${i.due_at}`} title={i.text} detail={f.when(new Date(i.due_at))} />
+      ))}
+      {checkedAt && !items.length && !error ? (
+        <Text style={{ color: p.muted }}>{t('reminders.schedule.empty')}</Text>
+      ) : null}
+      {items.length > 5 ? (
+        <Text variant="bodySm" style={{ color: p.muted }}>
+          {t('reminders.schedule.more', { n: items.length - 5 })}
+        </Text>
+      ) : null}
+      {error ? (
+        <Text tone="safety" accessibilityRole="alert">
+          {errorText(error)}
+        </Text>
+      ) : null}
+      <Button
+        label={t('reminders.schedule.check')}
+        variant="secondary"
+        onPress={() => void useReminderSchedule.getState().sync(householdId, true)}
+        loading={checking}
+        fullWidth
+      />
     </View>
   );
 }
@@ -204,15 +279,17 @@ function BackHeader({ title, right, back }: { title: string; right?: string; bac
   );
 }
 
-/** An underlined text button (Pause, Delete). */
-function LinkButton({ label, onPress }: { label: string; onPress: () => void }) {
+/** An underlined text button (Pause, Renew, Delete). */
+function LinkButton({ label, onPress, busy }: { label: string; onPress: () => void; busy?: boolean }) {
   const p = useMainPalette();
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={label}
+      accessibilityState={{ busy: !!busy, disabled: !!busy }}
+      disabled={busy}
       onPress={onPress}
-      style={{ minHeight: 48, alignItems: 'center', justifyContent: 'center' }}
+      style={{ minHeight: 48, alignItems: 'center', justifyContent: 'center', opacity: busy ? 0.5 : 1 }}
     >
       <Text style={{ color: p.ink, fontWeight: '700', textDecorationLine: 'underline' }}>{label}</Text>
     </Pressable>
@@ -296,23 +373,33 @@ function Form({ id, back }: { id?: string; back: (id?: string) => void }) {
   const p = useMainPalette();
   const f = useFormat();
   const name = useWearerName();
-  const existing = useReminders((s) => s.items.find((r) => r.id === id));
-  const [d, setD] = useState<Draft>(existing ?? newDraft());
+  const errorText = useErrorText();
+  const afterChange = useAfterChange();
+  const { householdId, data } = useReminderList();
+  const existing = data?.items.find((r) => r.id === id);
+  const [before] = useState<Draft | undefined>(() => (existing ? fromReminder(existing) : undefined));
+  const [d, setD] = useState<Draft>(() => before ?? newDraft(new Date()));
   const set = (patch: Partial<Draft>) => setD((x) => ({ ...x, ...patch }));
   const toggleDay = (n: number) =>
     set({ days: d.days.includes(n) ? d.days.filter((x) => x !== n) : [...d.days, n] });
 
-  const save = () => {
-    const draft = withDate({ ...d, text: d.text.trim() }, new Date());
-    if (id) {
-      useReminders.getState().update(id, draft);
-      back(id);
-    } else {
-      useReminders.getState().add(draft, 'wearer');
-      back();
-    }
-  };
+  const timeChanged =
+    !before || before.date !== d.date || before.hour !== d.hour || before.minute !== d.minute;
+  const problem = problemOf(d, new Date(), timeChanged);
 
+  const save = useMutation({
+    mutationFn: async () => {
+      if (!householdId) throw new Error('no household');
+      if (id && before) return updateReminder(householdId, id, patchOf(before, d));
+      return createReminder(householdId, toReminderIn(d));
+    },
+    onSuccess: async (saved) => {
+      await afterChange();
+      back(id ? saved.id : undefined);
+    },
+  });
+
+  const repeating = d.kind !== 'once';
   return (
     <View style={{ gap: theme.space[3] }}>
       <BackHeader
@@ -326,7 +413,7 @@ function Form({ id, back }: { id?: string; back: (id?: string) => void }) {
         value={d.text}
         onChangeText={(text) => set({ text })}
         placeholder={t('reminders.sayExample')}
-        maxLength={80}
+        maxLength={MAX_TEXT}
       />
       <View
         style={{
@@ -339,12 +426,21 @@ function Form({ id, back }: { id?: string; back: (id?: string) => void }) {
         }}
       >
         <Text variant="bodySm" style={{ color: p.muted }}>
+          {repeating ? t('reminders.firstDay') : t('reminders.date')}
+        </Text>
+        <Stepper
+          label={t('reminders.date')}
+          value={f.day(dayOf(d.date))}
+          less={() => set({ date: stepDate(d.date, -1, new Date()) })}
+          more={() => set({ date: stepDate(d.date, 1, new Date()) })}
+        />
+        <Text variant="bodySm" style={{ color: p.muted }}>
           {t('reminders.time')}
         </Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 16 }}>
           <Stepper
             label={t('reminders.hours')}
-            value={f.time(d.hour, d.minute)}
+            value={f.clock(d.hour, d.minute)}
             less={() => set(stepTime(d, -60))}
             more={() => set(stepTime(d, 60))}
           />
@@ -356,55 +452,36 @@ function Form({ id, back }: { id?: string; back: (id?: string) => void }) {
           />
         </View>
       </View>
-      <Text style={{ color: p.muted }}>{t('reminders.timeZone', { name })}</Text>
-      <Choice<Repeat>
+      <Text style={{ color: p.muted }}>{t('reminders.timeZone')}</Text>
+      <Choice<Kind>
         label={t('reminders.repeatLabel')}
-        value={d.repeat === 'interval' ? 'custom' : d.repeat}
-        onChange={(repeat) =>
-          set({ repeat: repeat === 'custom' && d.repeat === 'interval' ? 'interval' : repeat })
-        }
-        options={REPEATS.map((r) => ({ id: r, label: t(`reminders.repeat.${r}`) }))}
+        value={d.kind}
+        onChange={(kind) => set({ kind })}
+        options={KINDS.map((k) => ({ id: k, label: t(`reminders.kind.${k}`) }))}
       />
-      {d.repeat === 'custom' || d.repeat === 'interval' ? (
-        <Choice<'days' | 'hours'>
-          label={t('reminders.customKind')}
-          value={d.repeat === 'interval' ? 'hours' : 'days'}
-          onChange={(k) =>
-            set(
-              k === 'hours'
-                ? { repeat: 'interval', every: d.every ?? 2, until: d.until ?? 19 }
-                : { repeat: 'custom' },
-            )
-          }
-          options={[
-            { id: 'days', label: t('reminders.kindDays') },
-            { id: 'hours', label: t('reminders.kindHours') },
-          ]}
-        />
-      ) : null}
-      {d.repeat === 'interval' ? (
+      {d.kind === 'interval' ? (
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 16 }}>
           <Stepper
             label={t('reminders.everyLabel')}
-            value={t('reminders.everyShort', { hours: d.every ?? 2 })}
-            less={() => set({ every: Math.max(1, (d.every ?? 2) - 1) })}
-            more={() => set({ every: Math.min(12, (d.every ?? 2) + 1) })}
+            value={t('reminders.everyShort', { hours: d.every })}
+            less={() => set({ every: Math.max(1, d.every - 1) })}
+            more={() => set({ every: Math.min(12, d.every + 1) })}
           />
           <Stepper
             label={t('reminders.untilLabel')}
-            value={f.short(d.until ?? 19, 0)}
-            less={() => set({ until: Math.max(d.hour + 1, (d.until ?? 19) - 1) })}
-            more={() => set({ until: Math.min(23, (d.until ?? 19) + 1) })}
+            value={f.clock(d.until, 0)}
+            less={() => set({ until: Math.max(d.hour + 1, d.until - 1) })}
+            more={() => set({ until: Math.min(23, d.until + 1) })}
           />
         </View>
       ) : null}
-      {d.repeat === 'custom' ? (
+      {d.kind === 'days' ? (
         <View
           accessibilityRole="menu"
           accessibilityLabel={t('reminders.days')}
           style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}
         >
-          {[1, 2, 3, 4, 5, 6, 0].map((n) => {
+          {ISO_DAYS.map((n) => {
             const on = d.days.includes(n);
             return (
               <Pressable
@@ -429,20 +506,12 @@ function Form({ id, back }: { id?: string; back: (id?: string) => void }) {
           })}
         </View>
       ) : null}
-      <Text variant="kicker" style={{ color: p.gold }}>
-        {t('reminders.onPendant')}
-      </Text>
-      <Toggle title={t('reminders.speak')} value={d.speak} onChange={(speak) => set({ speak })} />
+      {repeating ? <Text style={{ color: p.muted }}>{t('reminders.runs90')}</Text> : null}
       <Toggle
         title={t('reminders.persist')}
         detail={t('reminders.persistDetail')}
-        value={d.persist}
-        onChange={(persist) => set({ persist })}
-      />
-      <Toggle
-        title={t('reminders.tellAdmins')}
-        value={d.tellAdmins}
-        onChange={(tellAdmins) => set({ tellAdmins })}
+        value={d.confirm}
+        onChange={(confirm) => set({ confirm })}
       />
       <View
         style={{
@@ -456,133 +525,116 @@ function Form({ id, back }: { id?: string; back: (id?: string) => void }) {
       >
         <Text style={{ color: p.ink, fontWeight: '700' }}>{t('reminders.preview')}</Text>
         <Text style={{ color: p.muted, fontStyle: 'italic' }}>
-          {t('reminders.previewText', { name, text: d.text.trim() || t('reminders.sayExample') })}
+          {`“${d.text.trim() || t('reminders.sayExample')}”`}
+        </Text>
+        <Text variant="bodySm" style={{ color: p.muted }}>
+          {t('reminders.firstAt', { when: f.when(startOf(d)) })}
         </Text>
       </View>
-      <Button label={t('reminders.save')} onPress={save} disabled={!canSave(d)} fullWidth />
+      {problem && problem !== 'noText' ? (
+        <Text tone="safety" accessibilityRole="alert">
+          {t(`reminders.problem.${problem}`)}
+        </Text>
+      ) : null}
+      {save.isError ? (
+        <Text tone="safety" accessibilityRole="alert">
+          {errorText(save.error)}
+        </Text>
+      ) : null}
+      <Button
+        label={t('reminders.save')}
+        onPress={() => save.mutate()}
+        disabled={!!problem || !householdId}
+        loading={save.isPending}
+        fullWidth
+      />
       <Button label={t('reminders.cancel')} variant="tertiary" onPress={() => back(id)} fullWidth />
     </View>
   );
 }
 
 function Detail({ id, back, edit }: { id: string; back: () => void; edit: () => void }) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const theme = useTheme();
   const p = useMainPalette();
   const f = useFormat();
-  const r = useReminders((s) => s.items.find((x) => x.id === id));
+  const errorText = useErrorText();
+  const afterChange = useAfterChange();
+  const { householdId, data } = useReminderList();
+  const r = data?.items.find((x) => x.id === id);
   const [sure, setSure] = useState(false);
-  if (!r) {
-    return (
-      <View style={{ gap: theme.space[3] }}>
-        <Button label={t('reminders.all')} variant="secondary" size="sm" onPress={back} />
-      </View>
-    );
-  }
-  const now = new Date();
-  const dueText = (rem: Reminder, at: Date) => {
-    const mins = at.getHours() * 60 + at.getMinutes();
-    const diff = slotAfter(rem, mins) - mins;
-    if (diff <= 0) return t('reminders.dueNow');
-    const unit = diff < 60 ? 'minute' : 'hour';
-    const n = diff < 60 ? diff : Math.round(diff / 60);
-    const how = new Intl.NumberFormat(i18n.language, { style: 'unit', unit, unitDisplay: 'short' }).format(n);
-    return t('reminders.dueIn', { when: how });
-  };
-  const week = [6, 5, 4, 3, 2, 1, 0].map((n) => addDays(now, -n));
-  const past = r.history.filter((h) => h.date !== dateKey(now)).sort((a, b) => (a.date < b.date ? 1 : -1));
-  const todayStatus = outcomeOn(r, now);
-  const dayOf = (iso: string) => {
-    const [y, m, d] = iso.split('-').map(Number);
-    return new Date(y!, m! - 1, d!);
-  };
-  const clock = (hhmm: string) => {
-    const [h, m] = hhmm.split(':').map(Number);
-    return f.time(h!, m!);
-  };
+  const act = useMutation({
+    mutationFn: async (action: 'pause' | 'resume' | 'renew' | 'delete') => {
+      if (!householdId) throw new Error('no household');
+      const run = {
+        pause: pauseReminder,
+        resume: resumeReminder,
+        renew: renewReminder,
+        delete: deleteReminder,
+      };
+      await run[action](householdId, id);
+      return action;
+    },
+    onSuccess: async (action) => {
+      await afterChange();
+      if (action === 'delete') back();
+    },
+  });
+  // A reminder that ended or was deleted elsewhere is gone from the list: go back to it.
+  useEffect(() => {
+    if (data && !r && !act.isPending) back();
+  }, [data, r, act.isPending, back]);
+  if (!r) return null;
+
+  const rule = readRule(r);
+  const first = new Date(r.starts_at);
+  const next = r.next_due_at ? new Date(r.next_due_at) : undefined;
+  const repeating = rule.kind !== 'once';
 
   return (
     <View style={{ gap: theme.space[3] }}>
       <BackHeader title={r.text} back={back} />
-      <Text style={{ color: p.ink }}>
-        {[f.when(r), r.repeat === 'interval' ? '' : f.time(r.hour, r.minute), f.created(r)]
-          .filter(Boolean)
-          .join(' · ')}
-        {r.paused ? ` · ${t('reminders.paused')}` : ''}
-      </Text>
-      <Text variant="kicker" style={{ color: p.gold }}>
-        {t('reminders.last7')}
-      </Text>
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-        {week.map((day) => {
-          const done = doneOn(r, day);
-          return (
-            <View
-              key={dateKey(day)}
-              accessible
-              accessibilityLabel={`${f.weekday(day, 'long')}: ${t(done ? 'reminders.confirmed' : 'reminders.notConfirmed')}`}
-              style={{
-                minWidth: 56,
-                minHeight: 40,
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: 999,
-                borderWidth: 1.5,
-                borderColor: done ? p.plum : p.line2,
-                backgroundColor: done ? p.plumSoft : 'transparent',
-              }}
-            >
-              <Text style={{ color: done ? p.plum : p.muted, fontWeight: '600' }}>{f.weekday(day)}</Text>
-            </View>
-          );
-        })}
-      </View>
-      {occursOn(r, now) && !todayStatus ? (
-        <InfoRow
-          title={`${t('reminders.today')} · ${f.time(r.hour, r.minute)}`}
-          detail={dueText(r, now)}
-          right={<Pill label={t('reminders.pending')} tone="warn" />}
-        />
+      <InfoRow
+        title={t('reminders.nextLabel')}
+        detail={r.status === 'paused' ? t('reminders.pausedDetail') : next ? f.when(next) : '—'}
+        right={r.status === 'paused' ? <Pill label={t('reminders.paused')} tone="warn" /> : undefined}
+      />
+      <InfoRow
+        title={t('reminders.repeatLabel')}
+        detail={
+          rule.kind === 'interval'
+            ? `${f.time(first)} · ${f.rule(rule)}`
+            : `${f.rule(rule)} · ${f.time(first)}`
+        }
+      />
+      {repeating && r.ends_on ? (
+        <InfoRow title={t('reminders.endsLabel')} detail={f.date(dayOf(r.ends_on))} />
       ) : null}
-      {todayStatus ? (
-        <InfoRow
-          title={`${t('reminders.today')} · ${clock(todayStatus.at)}`}
-          detail={t('reminders.byVoice')}
-          right={<Pill label={t('reminders.confirmed')} tone="good" />}
-        />
-      ) : null}
-      {past.map((h) => (
-        <InfoRow
-          key={h.date}
-          title={`${f.weekday(dayOf(h.date))} · ${clock(h.at)}`}
-          detail={
-            h.status === 'confirmed'
-              ? t('reminders.byVoice')
-              : t('reminders.noReply', { count: h.tries ?? 3 })
-          }
-          right={
-            <Pill
-              label={t(h.status === 'confirmed' ? 'reminders.confirmed' : 'reminders.missed')}
-              tone={h.status === 'confirmed' ? 'good' : 'bad'}
-            />
-          }
-        />
-      ))}
-      {!past.length && !todayStatus ? (
-        <Text style={{ color: p.muted }}>{t('reminders.noHistory')}</Text>
+      <InfoRow
+        title={t('reminders.persist')}
+        detail={r.repeat_until_confirmed ? t('reminders.persistDetail') : t('reminders.persistOff')}
+      />
+      <Text variant="bodySm" style={{ color: p.muted }}>
+        {t(r.created_via === 'voice' ? 'reminders.madeByVoice' : 'reminders.madeInApp')}
+      </Text>
+      {act.isError ? (
+        <Text tone="safety" accessibilityRole="alert">
+          {errorText(act.error)}
+        </Text>
       ) : null}
       <Button label={t('reminders.editButton')} variant="secondary" onPress={edit} fullWidth />
+      {repeating ? (
+        <LinkButton label={t('reminders.renew')} onPress={() => act.mutate('renew')} busy={act.isPending} />
+      ) : null}
       <LinkButton
-        label={r.paused ? t('reminders.resume') : t('reminders.pause')}
-        onPress={() => useReminders.getState().togglePause(r.id)}
+        label={r.status === 'paused' ? t('reminders.resume') : t('reminders.pause')}
+        onPress={() => act.mutate(r.status === 'paused' ? 'resume' : 'pause')}
+        busy={act.isPending}
       />
       <LinkButton
         label={sure ? t('reminders.deleteSure') : t('reminders.delete')}
-        onPress={() => {
-          if (!sure) return setSure(true);
-          useReminders.getState().remove(r.id);
-          back();
-        }}
+        onPress={() => (sure ? act.mutate('delete') : setSure(true))}
+        busy={act.isPending}
       />
     </View>
   );

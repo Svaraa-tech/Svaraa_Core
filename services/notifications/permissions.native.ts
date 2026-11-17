@@ -62,6 +62,21 @@ export async function requestPermission(): Promise<PermissionStatus> {
 
 export const openSettings = () => Linking.openSettings();
 
+/**
+ * Calls `listener` when the phone's push token changes (Android and iOS can renew it at any time).
+ * Returns a function that stops listening.
+ */
+export function onDeviceTokenChange(listener: () => void): () => void {
+  const Notifications = loadNotifications();
+  if (!Notifications) return () => undefined;
+  try {
+    const sub = Notifications.addPushTokenListener(() => listener());
+    return () => sub.remove();
+  } catch {
+    return () => undefined;
+  }
+}
+
 /** The Expo push token of this phone, or null when it cannot be had (Expo Go without a project id, a simulator). */
 export async function getDeviceToken(): Promise<{ token: string; platform: 'ios' | 'android' } | null> {
   try {

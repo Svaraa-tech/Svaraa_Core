@@ -7,11 +7,14 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import '@/i18n';
 import { env } from '@/config/env';
 import { useHousehold } from '@/features/household/store';
+import { useScheduleSync } from '@/features/reminders/store';
+import { DRAFT_HOUSEHOLD_ID } from '@/services/household/householdApi';
 import { restoreLanguage } from '@/features/settings/language';
 import { useSettings } from '@/features/settings/store';
 import { useWearer } from '@/features/wearer/store';
 import { startMocks } from '@/services/mocks';
 import { useSession } from '@/services/auth/session';
+import { keepPushTokenSaved } from '@/services/notifications/notificationsApi';
 import { ThemeProvider, fontAssets, useTheme } from '@/ui';
 
 const queryClient = new QueryClient();
@@ -29,11 +32,21 @@ function useSessionEffects() {
       queryClient.clear(); // never show one person's data to the next
     }
   }, [userId]);
+  // Save this phone for alerts on every app start after sign-in, and when the phone renews its push token.
+  useEffect(() => (userId ? keepPushTokenSaved() : undefined), [userId]);
   // Wearers get the large-text theme (same screens, same button sizes).
   const role = useHousehold((s) => s.role);
   useEffect(() => {
     useSettings.getState().setThemeMode(role === 'wearer' ? 'wearer' : 'caregiver');
   }, [role]);
+  // The wearer's phone asks for the reminder schedule now, every 5 minutes, and when the app comes back.
+  const householdId = useHousehold((s) => s.householdId);
+  const active = useHousehold((s) => s.hasActiveDevice);
+  useScheduleSync(
+    userId && role === 'wearer' && active && householdId && householdId !== DRAFT_HOUSEHOLD_ID
+      ? householdId
+      : undefined,
+  );
 }
 
 function Screens() {

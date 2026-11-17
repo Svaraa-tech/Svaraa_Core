@@ -9,6 +9,7 @@ import { DrillHistory } from '@/features/wearer/DrillHistory';
 import { useDrillRecords } from '@/features/wearer/drillRecords';
 import { DrillSteps } from '@/features/wearer/DrillSteps';
 import { useWearer } from '@/features/wearer/store';
+import { ApiError } from '@/services/api';
 import { StepHeader } from '@/features/wearer/StepHeader';
 import { useDrill } from '@/features/wearer/useDrill';
 import { Button, Choice, Screen, Text, useTheme } from '@/ui';
@@ -24,7 +25,7 @@ export default function SosDrill() {
   const router = useRouter();
   const errorText = useErrorText();
   const setupDone = useHousehold((s) => s.hasActiveDevice);
-  const { drill, start, starting, error, secondsLeft } = useDrill();
+  const { drill, start, starting, acknowledge, acknowledging, ackError, error, secondsLeft } = useDrill();
   const contacts = useWearer((s) => s.contacts);
   const [finishing, setFinishing] = useState(false);
   const [tab, setTab] = useState<'run' | 'history'>('run');
@@ -53,6 +54,17 @@ export default function SosDrill() {
     await useHousehold.getState().activate();
     router.replace('/home');
   };
+
+  // Answer the drill from this phone; during setup a pass moves straight on to Home.
+  const answer = async () => {
+    if ((await acknowledge()) && !setupDone) await finish();
+  };
+  const ackErrorText =
+    ackError instanceof ApiError && ackError.code === 'forbidden'
+      ? t('wearer.drill.ack.forbidden')
+      : ackError
+        ? errorText(ackError)
+        : null;
 
   const waiting = drill?.status === 'waiting';
   const passed = drill?.status === 'passed';
@@ -125,6 +137,24 @@ export default function SosDrill() {
               loading={starting}
               fullWidth
             />
+          ) : null}
+          {waiting ? (
+            <View style={{ gap: theme.space[1] }}>
+              <Button
+                label={t('wearer.drill.ack.button')}
+                onPress={() => void answer()}
+                loading={acknowledging || finishing}
+                fullWidth
+              />
+              <Text variant="bodySm" tone="secondary" style={{ textAlign: 'center' }}>
+                {t('wearer.drill.ack.hint')}
+              </Text>
+              {ackErrorText ? (
+                <Text tone="safety" accessibilityRole="alert">
+                  {ackErrorText}
+                </Text>
+              ) : null}
+            </View>
           ) : null}
           {drill ? <DrillSteps drill={drill} contacts={contacts} secondsLeft={secondsLeft} /> : null}
           <CallChain drill />

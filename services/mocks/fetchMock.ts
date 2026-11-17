@@ -16,7 +16,12 @@ export function createMockFetch(realFetch: typeof fetch): typeof fetch {
       if (route && isMocked(route.method, route.path)) {
         const body = route.method === 'GET' ? undefined : await request.json().catch(() => undefined);
         const params = matchPath(route.path, path) ?? {};
-        const out = route.respond({ body, headers: request.headers, params });
+        const out = route.respond({
+          body,
+          headers: request.headers,
+          params,
+          query: new URL(url).searchParams,
+        });
         if (out.body === undefined) return new Response(null, { status: out.status });
         return new Response(JSON.stringify(out.body), {
           status: out.status,
