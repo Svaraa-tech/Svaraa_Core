@@ -23,10 +23,32 @@ export const SCHEDULE_HOURS = 48;
 /** Send back the version held only while the held list still reaches at least this far ahead. */
 export const SCHEDULE_KEEP_MS = 24 * 3_600_000;
 
-/** This phone's time zone, e.g. Asia/Kolkata. The server reads the typed date and time in it. */
+/**
+ * Old names some browsers and phones still report, and the current name the server knows. Chrome on Windows says
+ * "Asia/Calcutta" for India, which the server refuses with `invalid_timezone`.
+ */
+const OLD_ZONE_NAMES: Record<string, string> = {
+  'Asia/Calcutta': 'Asia/Kolkata',
+  'Asia/Katmandu': 'Asia/Kathmandu',
+  'Asia/Rangoon': 'Asia/Yangon',
+  'Asia/Saigon': 'Asia/Ho_Chi_Minh',
+  'Asia/Dacca': 'Asia/Dhaka',
+  'Asia/Thimbu': 'Asia/Thimphu',
+  'Asia/Ujung_Pandang': 'Asia/Makassar',
+  'Asia/Ulan_Bator': 'Asia/Ulaanbaatar',
+  'Europe/Kiev': 'Europe/Kyiv',
+  'America/Buenos_Aires': 'America/Argentina/Buenos_Aires',
+  'America/Indianapolis': 'America/Indiana/Indianapolis',
+  'Atlantic/Faeroe': 'Atlantic/Faroe',
+  'Pacific/Truk': 'Pacific/Chuuk',
+  'Pacific/Ponape': 'Pacific/Pohnpei',
+};
+
+/** This phone's time zone by its current name, e.g. Asia/Kolkata. The server reads the typed date and time in it. */
 export function deviceTimeZone(): string {
   try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Kolkata';
+    const zone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Kolkata';
+    return OLD_ZONE_NAMES[zone] ?? zone;
   } catch {
     return 'Asia/Kolkata';
   }

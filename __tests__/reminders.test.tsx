@@ -17,7 +17,12 @@ import { verifyOtpAndSignIn } from '@/services/auth/authApi';
 import { useSession } from '@/services/auth/session';
 import { saveContacts } from '@/services/household/wearerApi';
 import { DEMO_CODE } from '@/services/mocks/routes';
-import { createReminder, getReminderSchedule, listReminders } from '@/services/reminders/remindersApi';
+import {
+  createReminder,
+  deviceTimeZone,
+  getReminderSchedule,
+  listReminders,
+} from '@/services/reminders/remindersApi';
 import {
   createWearerHousehold,
   INDIA,
@@ -82,6 +87,20 @@ describe('reminder rules', () => {
     expect(patchOf(before, { ...before, text: 'Walk' })).toEqual({ text: 'Walk' });
     expect(patchOf(before, { ...before, hour: 20 })).toEqual({ starts_at: '2026-11-12T20:00' });
     expect(patchOf(before, { ...before, kind: 'weekdays' })).toEqual({ rule: { kind: 'weekdays' } });
+  });
+});
+
+describe('time zone', () => {
+  const zoneIs = (timeZone: string) =>
+    jest
+      .spyOn(Intl.DateTimeFormat.prototype, 'resolvedOptions')
+      .mockReturnValue({ timeZone } as Intl.ResolvedDateTimeFormatOptions);
+  afterEach(() => jest.restoreAllMocks());
+  it('sends the current name for an old one the server refuses', () => {
+    zoneIs('Asia/Calcutta');
+    expect(deviceTimeZone()).toBe('Asia/Kolkata');
+    zoneIs('Europe/London');
+    expect(deviceTimeZone()).toBe('Europe/London');
   });
 });
 
