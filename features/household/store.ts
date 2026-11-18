@@ -1,8 +1,11 @@
 import { create } from 'zustand';
+import { flags } from '@/config/flags';
 import {
-  findWornHousehold,
+  DRAFT_HOUSEHOLD_ID,
   forgetHousehold,
+  getHome,
   onHouseholdKnown,
+  rememberHousehold,
   type Role,
 } from '@/services/household/householdApi';
 import { storage } from '@/services/storage';
@@ -155,19 +158,39 @@ onHouseholdKnown((id) => {
 });
 
 /**
- * A4: take the household this person wears from the server, if there is one, and move the progress forward to
- * match it: the household exists (C1 done), it is active (pendant verified and a contact saved), or protected
- * (an SOS drill passed). Offline or signed out: keep what the phone has.
+ * A4: bring the phone's setup in line with the server (GET /me/home).
+ * 1. A household saved on this phone that the server does not list for this person is dropped, and setup starts
+ *    again at B1. That happens when the household was cancelled or the person was removed, when the phone used
+ *    another server before, or when it was made by the mock backend. Without this, every household call (C1 to C8,
+ *    reminders) would use an id the server does not know and fail with 404, and C1 could not create a new one.
+ *    Every household of the person counts (wearer and caregiver), so a caregiver's setup is kept.
+ *    Only with the real backend: the mock backend forgets everything when the app restarts.
+ * 2. Then the household this person wears, if any, moves the progress forward: it exists (C1 done), it is active
+ *    (pendant verified and a contact saved), or protected (an SOS drill passed).
+ * Offline, or the server cannot answer: keep what the phone has.
  */
 async function syncWithServer(userId: string) {
-  let worn: Awaited<ReturnType<typeof findWornHousehold>>;
+  let circles: Awaited<ReturnType<typeof getHome>>['circles'];
   try {
-    worn = await findWornHousehold();
+    circles = (await getHome()).circles;
   } catch {
     return;
   }
+  if (useHousehold.getState().userId !== userId) return;
+  const savedId = useHousehold.getState().householdId;
+  if (
+    flags.household === 'real' &&
+    savedId &&
+    savedId !== DRAFT_HOUSEHOLD_ID &&
+    !circles.some((c) => c.id === savedId)
+  ) {
+    forgetHousehold();
+    await useHousehold.getState().reset();
+  }
+  const worn = circles.find((c) => c.my_role === 'wearer');
+  if (!worn) return;
+  rememberHousehold(worn.id);
   const s = useHousehold.getState();
-  if (!worn || s.userId !== userId) return;
   if (worn.protected) {
     useHousehold.setState({ role: 'wearer', householdId: worn.id });
     await s.activate();
