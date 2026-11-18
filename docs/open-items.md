@@ -110,3 +110,4 @@ After setting `EXPO_PUBLIC_API_URL` to the Railway dev URL, switch one area at a
 - Riddles has a switch (as in wireframe F7) but there is no Riddles app yet.
 - It shows the wearer's first name when known. The wireframe says wearer or admin can open it: caregiver access to another person's choices needs the backend.
 - Reminders: the wearer's phone downloads the schedule every 5 minutes but does not ring yet. Next: set local alarms (expo-notifications) or send the list to the pendant, speak the text, and repeat up to 3 times 5 minutes apart when `repeat_until_confirmed`. The server keeps no done or missed history, so the old "Last 7 days" and "Tell admins if missed" were removed.
+- Music: songs play on the phone, not the pendant yet. Playback in the background with the screen off on Android needs the expo-audio config plugin (`enableBackgroundPlayback`) and a new build. No playlists on the server: the app shows its two categories (old songs, bhajans) and search.

@@ -138,7 +138,9 @@
     "invalid_circle_state": "Finish setting up the pendant first.",
     "insufficient_role": "Only the wearer or an admin can do that.",
     "circle_not_found": "We could not find this household.",
-    "invalid_reminder_rule": "Check how often it repeats: the end time must be after the start time."
+    "invalid_reminder_rule": "Check how often it repeats: the end time must be after the start time.",
+    "google_sign_in_unavailable": "Google sign-in is not available in this version of the app. Use your phone number instead.",
+    "google_sign_in_failed": "Google sign-in did not work. Try again, or use your phone number."
   },
   "tabs": {
     "alerts": "Alerts",
@@ -635,21 +637,6 @@
       "news": "News",
       "games": "Games"
     },
-    "music": {
-      "now": "Morning bhajans",
-      "nowDetail": "Paused · plays on your pendant",
-      "lists": "Your lists",
-      "list": {
-        "bhajans": "Morning bhajans",
-        "film": "Old film songs",
-        "carnatic": "Carnatic evenings"
-      },
-      "count": {
-        "bhajans": "24 songs",
-        "film": "41 songs",
-        "carnatic": "18 songs"
-      }
-    },
     "responses": {
       "intro": "Quick replies Svaraa can send for you.",
       "fine": "“I'm fine, will call you later.”",
@@ -922,5 +909,34 @@
     "sosTitle": "SOS always comes first",
     "sosBody": "Anything playing stops when SOS starts.",
     "pending": "These choices are saved on this phone for now. The pendant will follow them once the backend is ready."
+  },
+  "music": {
+    "nowPlaying": "Now playing",
+    "status": {
+      "idle": "Stopped",
+      "loading": "Getting the song…",
+      "playing": "Playing",
+      "paused": "Paused"
+    },
+    "play": "Play",
+    "pause": "Pause",
+    "stop": "Stop",
+    "notPlayable": "This song is not ready to play yet. Try another one.",
+    "search": {
+      "label": "Search songs",
+      "placeholder": "Song, singer or film"
+    },
+    "categoryLabel": "Kind of music",
+    "category": {
+      "all": "All",
+      "old_song": "Old songs",
+      "bhajan": "Bhajans"
+    },
+    "retry": "Try again",
+    "empty": "No songs here yet.",
+    "noMatches": "No songs found for “{{q}}”.",
+    "count": "{{n}} songs",
+    "soon": "Coming soon",
+    "onPhone": "Songs play on this phone. Tap a song to play it."
   }
 }

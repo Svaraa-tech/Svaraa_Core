@@ -5975,6 +5975,139 @@
           }
         }
       }
+    },
+    "/api/v1/music/tracks": {
+      "get": {
+        "tags": ["music"],
+        "summary": "List or search the catalog",
+        "operationId": "list_tracks_api_v1_music_tracks_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/TrackCategory"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 100
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Words to match in title (English or Hindi), singer or film",
+              "title": "Q"
+            },
+            "description": "Words to match in title (English or Hindi), singer or film"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrackOut"
+                  },
+                  "title": "Response List Tracks Api V1 Music Tracks Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/music/tracks/{track_id}": {
+      "get": {
+        "tags": ["music"],
+        "summary": "Get one track, with a fresh stream link",
+        "operationId": "get_track_api_v1_music_tracks__track_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "track_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Track Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrackOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -6198,6 +6331,15 @@
             "type": "string",
             "format": "date-time",
             "title": "Expires At"
+          },
+          "events": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Events",
+            "description": "Actions for the app, same shape as on the voice WebSocket, e.g. {\"type\": \"music\", \"action\": \"play\", \"tracks\": [...]}"
           }
         },
         "type": "object",
@@ -8426,6 +8568,95 @@
         "required": ["access_token"],
         "title": "TokenOut"
       },
+      "TrackCategory": {
+        "type": "string",
+        "enum": ["old_song", "bhajan"],
+        "title": "TrackCategory"
+      },
+      "TrackOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "title_hi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title Hi",
+            "description": "Title in Devanagari"
+          },
+          "artist": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Artist",
+            "description": "Singer(s); empty for traditional bhajans"
+          },
+          "film": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Film"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          },
+          "category": {
+            "$ref": "#/components/schemas/TrackCategory"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags"
+          },
+          "stream_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stream Url",
+            "description": "Temporary link to the audio (valid for a few hours). Empty if the song isn't playable yet."
+          }
+        },
+        "type": "object",
+        "required": ["id", "title", "title_hi", "artist", "film", "year", "category", "tags", "stream_url"],
+        "title": "TrackOut"
+      },
       "TransferOut": {
         "properties": {
           "id": {
@@ -8642,6 +8873,10 @@
     {
       "name": "transfers",
       "description": "Hand over a caretaker seat or the wearer role, and cancel a circle. All need the actor's OTP."
+    },
+    {
+      "name": "music",
+      "description": "Svaraa's curated music catalog (old songs, bhajans) with stream links."
     },
     {
       "name": "news",

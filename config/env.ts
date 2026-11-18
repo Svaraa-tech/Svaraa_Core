@@ -21,6 +21,8 @@ export const env = {
     .filter(Boolean),
   /** Google OAuth Web client ID (public, not a secret). Also in the backend's GOOGLE_CLIENT_IDS. */
   googleWebClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ?? '',
+  /** Google OAuth iOS client ID (bundle ai.svaraa). Public. app.config.ts also makes it the iOS URL scheme. */
+  googleIosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ?? '',
   appVersion: Constants.expoConfig?.version ?? '0.0.0',
 };
 

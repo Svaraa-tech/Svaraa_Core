@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { flags } from '@/config/flags';
 import { GamesView } from '@/features/games/GamesView';
+import { MusicView } from '@/features/music/MusicView';
 import { RemindersView } from '@/features/reminders/RemindersView';
 import { NewsView } from '@/features/news/NewsView';
 import { usePendantStatus } from '@/features/pendant/store';
@@ -21,23 +22,7 @@ export const APP_IDS: AppId[] = (
 
 const Row = InfoRow;
 
-/** PENDING BACKEND: Music and Responses show the sample content from the wireframes until their APIs exist. */
-function Music() {
-  const { t } = useTranslation();
-  const p = useMainPalette();
-  return (
-    <>
-      <Row title={t('apps.music.now')} detail={t('apps.music.nowDetail')} />
-      <Text variant="kicker" style={{ color: p.gold }}>
-        {t('apps.music.lists')}
-      </Text>
-      {(['bhajans', 'film', 'carnatic'] as const).map((k) => (
-        <Row key={k} title={t(`apps.music.list.${k}`)} detail={t(`apps.music.count.${k}`)} />
-      ))}
-    </>
-  );
-}
-
+/** PENDING BACKEND: Responses shows the sample content from the wireframes until its API exists. */
 function Responses() {
   const { t } = useTranslation();
   const p = useMainPalette();
@@ -113,7 +98,7 @@ function Contacts() {
 }
 
 const VIEWS: Record<AppId, () => ReactNode> = {
-  music: Music,
+  music: MusicView,
   reminders: RemindersView,
   responses: Responses,
   news: NewsView,

@@ -1275,6 +1275,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/music/tracks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List or search the catalog */
+        get: operations["list_tracks_api_v1_music_tracks_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/music/tracks/{track_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get one track, with a fresh stream link */
+        get: operations["get_track_api_v1_music_tracks__track_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1387,6 +1421,13 @@ export interface components {
              * Format: date-time
              */
             expires_at: string;
+            /**
+             * Events
+             * @description Actions for the app, same shape as on the voice WebSocket, e.g. {"type": "music", "action": "play", "tracks": [...]}
+             */
+            events?: {
+                [key: string]: unknown;
+            }[];
         };
         /** CircleCreateIn */
         CircleCreateIn: {
@@ -2491,6 +2532,43 @@ export interface components {
              * @default bearer
              */
             token_type: string;
+        };
+        /**
+         * TrackCategory
+         * @enum {string}
+         */
+        TrackCategory: "old_song" | "bhajan";
+        /** TrackOut */
+        TrackOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Title */
+            title: string;
+            /**
+             * Title Hi
+             * @description Title in Devanagari
+             */
+            title_hi: string | null;
+            /**
+             * Artist
+             * @description Singer(s); empty for traditional bhajans
+             */
+            artist: string | null;
+            /** Film */
+            film: string | null;
+            /** Year */
+            year: number | null;
+            category: components["schemas"]["TrackCategory"];
+            /** Tags */
+            tags: string[];
+            /**
+             * Stream Url
+             * @description Temporary link to the audio (valid for a few hours). Empty if the song isn't playable yet.
+             */
+            stream_url: string | null;
         };
         /** TransferOut */
         TransferOut: {
@@ -7067,6 +7145,71 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_tracks_api_v1_music_tracks_get: {
+        parameters: {
+            query?: {
+                category?: components["schemas"]["TrackCategory"] | null;
+                /** @description Words to match in title (English or Hindi), singer or film */
+                q?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrackOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_track_api_v1_music_tracks__track_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                track_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrackOut"];
                 };
             };
             /** @description Validation Error */

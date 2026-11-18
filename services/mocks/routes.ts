@@ -3,6 +3,7 @@ import type { ChatIn, ChatOut } from '@/services/api/pending';
 import type { components } from '@/services/api/schema';
 import { newsFilters, sampleNewsPage } from './news';
 import * as reminders from './reminders';
+import * as music from './music';
 import {
   ackDrillFor,
   authenticate,
@@ -530,6 +531,27 @@ export const routes: MockRoute[] = [
       if ('error' in h) return h.error;
       const d = drillNow(h.householdId, ctx.params.drill_id ?? '');
       return d ? { status: 200, body: d } : fail(404, 'drill_not_found', 'Drill not found');
+    },
+  },
+  // Music (flags.musicApi): a small sample catalog with no audio. Needs sign-in, like the server.
+  {
+    method: 'GET',
+    path: `${API}/music/tracks`,
+    respond: ({ headers, query }) => {
+      const auth = authenticate(headers);
+      if ('code' in auth) return fail(401, auth.code, 'Invalid or expired token');
+      const tracks = music.listTracks(query);
+      return tracks ? { status: 200, body: tracks } : fail(422, 'validation_error', 'Invalid request');
+    },
+  },
+  {
+    method: 'GET',
+    path: `${API}/music/tracks/{track_id}`,
+    respond: ({ headers, params }) => {
+      const auth = authenticate(headers);
+      if ('code' in auth) return fail(401, auth.code, 'Invalid or expired token');
+      const track = music.trackById(params.track_id ?? '');
+      return track ? { status: 200, body: track } : fail(404, 'not_found', 'Track not found');
     },
   },
   // Reminders (flags.remindersApi): the same rules and limits as the server, times read in this computer's zone.

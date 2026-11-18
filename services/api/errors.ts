@@ -12,6 +12,9 @@ const CODE_TABLE = {
   invalid_google_token: true,
   google_email_unverified: true,
   mobile_number_taken: true,
+  // Added by the app: Google sign-in on a phone (services/auth/google.ts).
+  google_sign_in_unavailable: true,
+  google_sign_in_failed: true,
   // Session
   missing_token: true,
   invalid_token: true,

@@ -69,7 +69,7 @@ export { GoogleCancelled, type GoogleResult };
 
 /**
  * Google sign-in. With flags.googleSignIn = 'mock': a fake ID token. With 'real': Google's sign-in
- * (browser: google.web.ts; phones: not wired yet, see google.ts). Throws GoogleCancelled if the person closes it.
+ * (browser: google.web.ts; Android and iOS: google.ts, needs a development build or the APK). Throws GoogleCancelled if the person closes it.
  */
 export async function getGoogleCredential(): Promise<GoogleResult> {
   if (flags.googleSignIn === 'mock') return { idToken: 'mock-google-id-token' }; // no name: the greeting is then just "Hello"

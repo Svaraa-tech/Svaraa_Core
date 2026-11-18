@@ -22,6 +22,8 @@ type Flags = {
   newsApi: Source;
   /** Reminders and the wearer's reminder schedule (/circles/{id}/reminders). EXPO_PUBLIC_REAL_AREAS=remindersApi. */
   remindersApi: Source;
+  /** The music catalog (GET /music/tracks). EXPO_PUBLIC_REAL_AREAS=musicApi. */
+  musicApi: Source;
 };
 
 /**
@@ -44,12 +46,13 @@ export const flags: Flags = {
   ai: source('ai', 'mock'),
   newsApi: source('newsApi', 'mock'),
   remindersApi: source('remindersApi', 'mock'),
+  musicApi: source('musicApi', 'mock'),
 };
 
 /** Which area an API path belongs to. Paths of no listed area are not switched here. */
 export function areaOf(
   path: string,
-): 'auth' | 'household' | 'notifications' | 'ai' | 'newsApi' | 'remindersApi' | undefined {
+): 'auth' | 'household' | 'notifications' | 'ai' | 'newsApi' | 'remindersApi' | 'musicApi' | undefined {
   if (path.startsWith('/api/v1/auth/') || path.startsWith('/api/v1/users/')) return 'auth';
   if (path.startsWith('/api/v1/chat/')) return 'ai';
   if (/^\/api\/v1\/circles\/[^/]+\/reminders(\/|$)/.test(path)) return 'remindersApi';
@@ -57,6 +60,7 @@ export function areaOf(
   if (path.startsWith('/api/v1/circles') || path.startsWith('/api/v1/devices/') || path === '/api/v1/me/home')
     return 'household';
   if (path === '/api/v1/me/installations') return 'notifications';
+  if (path.startsWith('/api/v1/music/')) return 'musicApi';
   if (path === '/api/v1/news' || path.startsWith('/api/v1/news/')) return 'newsApi';
   return undefined;
 }
