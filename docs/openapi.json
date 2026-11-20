@@ -5272,6 +5272,443 @@
         ]
       }
     },
+    "/api/v1/notes": {
+      "post": {
+        "tags": ["notes"],
+        "summary": "Upload a recording",
+        "description": "Multipart form data with the recording in `audio` (m4a/aac, mp3, wav, webm, ogg, opus, flac, 3gp or amr; at most 50 MB). Answers at once with the note in `queued`; transcription and the notes (English and Hindi) follow in the background. Poll `GET /notes/{id}` every few seconds until `status` is `ready` or `failed`.\n\nSend `duration_seconds` if you know it, so a recording over 2 hours is refused before upload work is done (`422 recording_too_long`). A user may upload 20 recordings a day (`429 notes_daily_limit_reached`, with `details.limit`).\n\nAsk everyone being recorded for their agreement first: the app should say so before recording.",
+        "operationId": "upload_note_api_v1_notes_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_note_api_v1_notes_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NoteOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ...",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited, e.g. `otp_cooldown`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Dependency unavailable, e.g. `otp_send_failed`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["notes"],
+        "summary": "List my notes",
+        "description": "The signed-in user's notes, newest first, without the transcripts. Notes are private to the person who recorded them.",
+        "operationId": "list_notes_api_v1_notes_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "`next_cursor` from the previous page",
+              "title": "Cursor"
+            },
+            "description": "`next_cursor` from the previous page"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NoteListOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request, e.g. `invalid_mobile_number`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ...",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/notes/{note_id}": {
+      "get": {
+        "tags": ["notes"],
+        "summary": "One note, with its transcript",
+        "operationId": "get_note_api_v1_notes__note_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "note_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Note Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NoteOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ...",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found, or you are not a member: `circle_not_found`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["notes"],
+        "summary": "Rename a note",
+        "description": "Sets the user's own title. `null` goes back to the generated one.",
+        "operationId": "rename_note_api_v1_notes__note_id__patch",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "note_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Note Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NoteTitleIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NoteOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ...",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found, or you are not a member: `circle_not_found`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["notes"],
+        "summary": "Delete a note",
+        "description": "The transcript and the notes are wiped at once; the recording is deleted from storage within minutes.",
+        "operationId": "delete_note_api_v1_notes__note_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "note_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Note Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ...",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found, or you are not a member: `circle_not_found`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/notes/{note_id}/retry": {
+      "post": {
+        "tags": ["notes"],
+        "summary": "Process a failed note again",
+        "description": "Only for `failed` notes (`409 note_not_failed`). If the transcript was already made, only the notes are redone. Once the recording has been deleted and there is no transcript, it cannot be retried (`409 note_audio_gone`).",
+        "operationId": "retry_note_api_v1_notes__note_id__retry_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "note_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Note Id"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NoteOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ...",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found, or you are not a member: `circle_not_found`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict, e.g. `mobile_number_taken`, `invalid_circle_state`, `contact_limit_reached`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/circles/{circle_id}/caretaker-transfers": {
       "post": {
         "tags": ["transfers"],
@@ -5942,7 +6379,7 @@
       "post": {
         "tags": ["chat"],
         "summary": "Chat Stream",
-        "description": "Streaming chat — returns server-sent events so the frontend can\ndisplay tokens as they arrive (ChatGPT-style typing effect).",
+        "description": "Streaming chat â€” returns server-sent events so the frontend can\ndisplay tokens as they arrive (ChatGPT-style typing effect).",
         "operationId": "chat_stream_api_v1_chat_stream_post",
         "requestBody": {
           "content": {
@@ -6112,6 +6549,41 @@
   },
   "components": {
     "schemas": {
+      "ActionItemOut": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "owner": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Owner",
+            "description": "A name or a speaker label (\"Speaker 2\"), only when the recording says who"
+          },
+          "due": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Due",
+            "description": "When, as said in the recording (\"tomorrow\", \"Friday 5 pm\"); free text"
+          }
+        },
+        "type": "object",
+        "required": ["text"],
+        "title": "ActionItemOut"
+      },
       "ArticleOut": {
         "properties": {
           "id": {
@@ -6195,6 +6667,58 @@
           "published_at"
         ],
         "title": "ArticleOut"
+      },
+      "Body_upload_note_api_v1_notes_post": {
+        "properties": {
+          "audio": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "Audio",
+            "description": "The recording"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title",
+            "description": "Optional; else a title is generated"
+          },
+          "recorded_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recorded At",
+            "description": "When recording started (ISO 8601 with offset)"
+          },
+          "duration_seconds": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Seconds",
+            "description": "Length of the recording, if the app knows it"
+          }
+        },
+        "type": "object",
+        "required": ["audio"],
+        "title": "Body_upload_note_api_v1_notes_post"
       },
       "CancelCircleIn": {
         "properties": {
@@ -7530,6 +8054,399 @@
         "required": ["items", "next_cursor"],
         "title": "NewsPageOut"
       },
+      "NoteContentOut": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Generated, at most about 8 words"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary",
+            "description": "2 to 5 sentences"
+          },
+          "key_points": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Key Points"
+          },
+          "decisions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Decisions"
+          },
+          "action_items": {
+            "items": {
+              "$ref": "#/components/schemas/ActionItemOut"
+            },
+            "type": "array",
+            "title": "Action Items"
+          }
+        },
+        "type": "object",
+        "required": ["title", "summary", "key_points", "decisions", "action_items"],
+        "title": "NoteContentOut",
+        "description": "The notes in one language."
+      },
+      "NoteErrorOut": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code",
+            "description": "`no_speech`, `audio_unreadable`, `audio_too_large`, `audio_missing`, `transcription_failed`, `transcription_unavailable`, `summary_failed`, `summary_unavailable`, `processing_timeout` or `internal_error`"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": ["code", "message"],
+        "title": "NoteErrorOut"
+      },
+      "NoteListItemOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["queued", "transcribing", "summarizing", "ready", "failed"],
+            "title": "Status",
+            "description": "`queued` -> `transcribing` -> `summarizing` -> `ready`, or `failed`. A note being retried after an error is back in `queued` with `error` set"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title",
+            "description": "The user's own title, if they set one. Else show `summary.<lang>.title`"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NoteSummaryOut"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Null until the note is `ready`"
+          },
+          "recorded_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recorded At",
+            "description": "When the recording started, as the app reported it"
+          },
+          "duration_seconds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Seconds"
+          },
+          "languages": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Languages",
+            "description": "Languages heard in the recording, e.g. [\"hi\", \"en\"]"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NoteErrorOut"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Why the last attempt failed; null when nothing went wrong"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "title",
+          "summary",
+          "recorded_at",
+          "duration_seconds",
+          "languages",
+          "error",
+          "created_at",
+          "completed_at"
+        ],
+        "title": "NoteListItemOut"
+      },
+      "NoteListOut": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/NoteListItemOut"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor",
+            "description": "Pass as `cursor` for the next page; null on the last page"
+          },
+          "daily_limit": {
+            "type": "integer",
+            "title": "Daily Limit",
+            "description": "How many recordings a user may upload per day (UTC)"
+          }
+        },
+        "type": "object",
+        "required": ["items", "next_cursor", "daily_limit"],
+        "title": "NoteListOut"
+      },
+      "NoteOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["queued", "transcribing", "summarizing", "ready", "failed"],
+            "title": "Status",
+            "description": "`queued` -> `transcribing` -> `summarizing` -> `ready`, or `failed`. A note being retried after an error is back in `queued` with `error` set"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title",
+            "description": "The user's own title, if they set one. Else show `summary.<lang>.title`"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NoteSummaryOut"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Null until the note is `ready`"
+          },
+          "recorded_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recorded At",
+            "description": "When the recording started, as the app reported it"
+          },
+          "duration_seconds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Seconds"
+          },
+          "languages": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Languages",
+            "description": "Languages heard in the recording, e.g. [\"hi\", \"en\"]"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NoteErrorOut"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Why the last attempt failed; null when nothing went wrong"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "transcript": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transcript",
+            "description": "The full text. \"Speaker N: ...\" lines when more than one person spoke"
+          },
+          "utterances": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/UtteranceOut"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Utterances",
+            "description": "The transcript in timed segments, with speakers"
+          },
+          "audio_available": {
+            "type": "boolean",
+            "title": "Audio Available",
+            "description": "The recording is still stored (it is deleted after a few days)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "title",
+          "summary",
+          "recorded_at",
+          "duration_seconds",
+          "languages",
+          "error",
+          "created_at",
+          "completed_at",
+          "transcript",
+          "utterances",
+          "audio_available"
+        ],
+        "title": "NoteOut"
+      },
+      "NoteSummaryOut": {
+        "properties": {
+          "en": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NoteContentOut"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "English"
+          },
+          "hi": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NoteContentOut"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Hindi, in Devanagari script"
+          }
+        },
+        "type": "object",
+        "title": "NoteSummaryOut"
+      },
+      "NoteTitleIn": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title",
+            "description": "Null or blank goes back to the generated title"
+          }
+        },
+        "type": "object",
+        "required": ["title"],
+        "title": "NoteTitleIn"
+      },
       "OtpIn": {
         "properties": {
           "otp": {
@@ -8735,6 +9652,52 @@
         ],
         "title": "TransferOut"
       },
+      "UtteranceOut": {
+        "properties": {
+          "speaker": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Speaker",
+            "description": "0-based; shown as \"Speaker 1\" in `transcript`"
+          },
+          "start": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start",
+            "description": "Seconds from the start of the recording"
+          },
+          "end": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": ["speaker", "start", "end", "text"],
+        "title": "UtteranceOut"
+      },
       "ValidationError": {
         "properties": {
           "loc": {
@@ -8881,6 +9844,10 @@
     {
       "name": "news",
       "description": "Top headlines in English and Hindi from public RSS feeds, filterable by category, language and keyword."
+    },
+    {
+      "name": "notes",
+      "description": "Record audio and get a transcript plus notes (summary, key points, decisions, action items) in English and Hindi. Private to the person who recorded."
     },
     {
       "name": "health",

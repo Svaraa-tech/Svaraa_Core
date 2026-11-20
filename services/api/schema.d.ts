@@ -1097,6 +1097,79 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/notes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List my notes
+         * @description The signed-in user's notes, newest first, without the transcripts. Notes are private to the person who recorded them.
+         */
+        get: operations["list_notes_api_v1_notes_get"];
+        put?: never;
+        /**
+         * Upload a recording
+         * @description Multipart form data with the recording in `audio` (m4a/aac, mp3, wav, webm, ogg, opus, flac, 3gp or amr; at most 50 MB). Answers at once with the note in `queued`; transcription and the notes (English and Hindi) follow in the background. Poll `GET /notes/{id}` every few seconds until `status` is `ready` or `failed`.
+         *
+         *     Send `duration_seconds` if you know it, so a recording over 2 hours is refused before upload work is done (`422 recording_too_long`). A user may upload 20 recordings a day (`429 notes_daily_limit_reached`, with `details.limit`).
+         *
+         *     Ask everyone being recorded for their agreement first: the app should say so before recording.
+         */
+        post: operations["upload_note_api_v1_notes_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notes/{note_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One note, with its transcript */
+        get: operations["get_note_api_v1_notes__note_id__get"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete a note
+         * @description The transcript and the notes are wiped at once; the recording is deleted from storage within minutes.
+         */
+        delete: operations["delete_note_api_v1_notes__note_id__delete"];
+        options?: never;
+        head?: never;
+        /**
+         * Rename a note
+         * @description Sets the user's own title. `null` goes back to the generated one.
+         */
+        patch: operations["rename_note_api_v1_notes__note_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/notes/{note_id}/retry": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Process a failed note again
+         * @description Only for `failed` notes (`409 note_not_failed`). If the transcript was already made, only the notes are redone. Once the recording has been deleted and there is no transcript, it cannot be retried (`409 note_audio_gone`).
+         */
+        post: operations["retry_note_api_v1_notes__note_id__retry_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/circles/{circle_id}/caretaker-transfers": {
         parameters: {
             query?: never;
@@ -1265,7 +1338,7 @@ export interface paths {
         put?: never;
         /**
          * Chat Stream
-         * @description Streaming chat — returns server-sent events so the frontend can
+         * @description Streaming chat â€” returns server-sent events so the frontend can
          *     display tokens as they arrive (ChatGPT-style typing effect).
          */
         post: operations["chat_stream_api_v1_chat_stream_post"];
@@ -1313,6 +1386,21 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** ActionItemOut */
+        ActionItemOut: {
+            /** Text */
+            text: string;
+            /**
+             * Owner
+             * @description A name or a speaker label ("Speaker 2"), only when the recording says who
+             */
+            owner?: string | null;
+            /**
+             * Due
+             * @description When, as said in the recording ("tomorrow", "Friday 5 pm"); free text
+             */
+            due?: string | null;
+        };
         /** ArticleOut */
         ArticleOut: {
             /**
@@ -1354,6 +1442,29 @@ export interface components {
              * Format: date-time
              */
             published_at: string;
+        };
+        /** Body_upload_note_api_v1_notes_post */
+        Body_upload_note_api_v1_notes_post: {
+            /**
+             * Audio
+             * @description The recording
+             */
+            audio: string;
+            /**
+             * Title
+             * @description Optional; else a title is generated
+             */
+            title?: string | null;
+            /**
+             * Recorded At
+             * @description When recording started (ISO 8601 with offset)
+             */
+            recorded_at?: string | null;
+            /**
+             * Duration Seconds
+             * @description Length of the recording, if the app knows it
+             */
+            duration_seconds?: number | null;
         };
         /** CancelCircleIn */
         CancelCircleIn: {
@@ -1978,6 +2089,167 @@ export interface components {
              * @description Pass as `cursor` to get the next page; null on the last page
              */
             next_cursor: string | null;
+        };
+        /**
+         * NoteContentOut
+         * @description The notes in one language.
+         */
+        NoteContentOut: {
+            /**
+             * Title
+             * @description Generated, at most about 8 words
+             */
+            title: string;
+            /**
+             * Summary
+             * @description 2 to 5 sentences
+             */
+            summary: string;
+            /** Key Points */
+            key_points: string[];
+            /** Decisions */
+            decisions: string[];
+            /** Action Items */
+            action_items: components["schemas"]["ActionItemOut"][];
+        };
+        /** NoteErrorOut */
+        NoteErrorOut: {
+            /**
+             * Code
+             * @description `no_speech`, `audio_unreadable`, `audio_too_large`, `audio_missing`, `transcription_failed`, `transcription_unavailable`, `summary_failed`, `summary_unavailable`, `processing_timeout` or `internal_error`
+             */
+            code: string;
+            /** Message */
+            message: string;
+        };
+        /** NoteListItemOut */
+        NoteListItemOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Status
+             * @description `queued` -> `transcribing` -> `summarizing` -> `ready`, or `failed`. A note being retried after an error is back in `queued` with `error` set
+             * @enum {string}
+             */
+            status: "queued" | "transcribing" | "summarizing" | "ready" | "failed";
+            /**
+             * Title
+             * @description The user's own title, if they set one. Else show `summary.<lang>.title`
+             */
+            title: string | null;
+            /** @description Null until the note is `ready` */
+            summary: components["schemas"]["NoteSummaryOut"] | null;
+            /**
+             * Recorded At
+             * @description When the recording started, as the app reported it
+             */
+            recorded_at: string | null;
+            /** Duration Seconds */
+            duration_seconds: number | null;
+            /**
+             * Languages
+             * @description Languages heard in the recording, e.g. ["hi", "en"]
+             */
+            languages: string[];
+            /** @description Why the last attempt failed; null when nothing went wrong */
+            error: components["schemas"]["NoteErrorOut"] | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Completed At */
+            completed_at: string | null;
+        };
+        /** NoteListOut */
+        NoteListOut: {
+            /** Items */
+            items: components["schemas"]["NoteListItemOut"][];
+            /**
+             * Next Cursor
+             * @description Pass as `cursor` for the next page; null on the last page
+             */
+            next_cursor: string | null;
+            /**
+             * Daily Limit
+             * @description How many recordings a user may upload per day (UTC)
+             */
+            daily_limit: number;
+        };
+        /** NoteOut */
+        NoteOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Status
+             * @description `queued` -> `transcribing` -> `summarizing` -> `ready`, or `failed`. A note being retried after an error is back in `queued` with `error` set
+             * @enum {string}
+             */
+            status: "queued" | "transcribing" | "summarizing" | "ready" | "failed";
+            /**
+             * Title
+             * @description The user's own title, if they set one. Else show `summary.<lang>.title`
+             */
+            title: string | null;
+            /** @description Null until the note is `ready` */
+            summary: components["schemas"]["NoteSummaryOut"] | null;
+            /**
+             * Recorded At
+             * @description When the recording started, as the app reported it
+             */
+            recorded_at: string | null;
+            /** Duration Seconds */
+            duration_seconds: number | null;
+            /**
+             * Languages
+             * @description Languages heard in the recording, e.g. ["hi", "en"]
+             */
+            languages: string[];
+            /** @description Why the last attempt failed; null when nothing went wrong */
+            error: components["schemas"]["NoteErrorOut"] | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Completed At */
+            completed_at: string | null;
+            /**
+             * Transcript
+             * @description The full text. "Speaker N: ..." lines when more than one person spoke
+             */
+            transcript: string | null;
+            /**
+             * Utterances
+             * @description The transcript in timed segments, with speakers
+             */
+            utterances: components["schemas"]["UtteranceOut"][] | null;
+            /**
+             * Audio Available
+             * @description The recording is still stored (it is deleted after a few days)
+             */
+            audio_available: boolean;
+        };
+        /** NoteSummaryOut */
+        NoteSummaryOut: {
+            /** @description English */
+            en?: components["schemas"]["NoteContentOut"] | null;
+            /** @description Hindi, in Devanagari script */
+            hi?: components["schemas"]["NoteContentOut"] | null;
+        };
+        /** NoteTitleIn */
+        NoteTitleIn: {
+            /**
+             * Title
+             * @description Null or blank goes back to the generated title
+             */
+            title: string | null;
         };
         /**
          * OtpIn
@@ -2618,6 +2890,23 @@ export interface components {
              * Format: date-time
              */
             expires_at: string;
+        };
+        /** UtteranceOut */
+        UtteranceOut: {
+            /**
+             * Speaker
+             * @description 0-based; shown as "Speaker 1" in `transcript`
+             */
+            speaker: number | null;
+            /**
+             * Start
+             * @description Seconds from the start of the recording
+             */
+            start: number | null;
+            /** End */
+            end: number | null;
+            /** Text */
+            text: string;
         };
         /** ValidationError */
         ValidationError: {
@@ -6606,6 +6895,324 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    list_notes_api_v1_notes_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                /** @description `next_cursor` from the previous page */
+                cursor?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NoteListOut"];
+                };
+            };
+            /** @description Bad request, e.g. `invalid_mobile_number` */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ... */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_note_api_v1_notes_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_note_api_v1_notes_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NoteOut"];
+                };
+            };
+            /** @description Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ... */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Rate limited, e.g. `otp_cooldown` */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Dependency unavailable, e.g. `otp_send_failed` */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    get_note_api_v1_notes__note_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                note_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NoteOut"];
+                };
+            };
+            /** @description Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ... */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found, or you are not a member: `circle_not_found` */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_note_api_v1_notes__note_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                note_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ... */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found, or you are not a member: `circle_not_found` */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    rename_note_api_v1_notes__note_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                note_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NoteTitleIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NoteOut"];
+                };
+            };
+            /** @description Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ... */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found, or you are not a member: `circle_not_found` */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    retry_note_api_v1_notes__note_id__retry_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                note_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NoteOut"];
+                };
+            };
+            /** @description Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ... */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found, or you are not a member: `circle_not_found` */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict, e.g. `mobile_number_taken`, `invalid_circle_state`, `contact_limit_reached` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

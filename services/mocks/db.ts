@@ -25,12 +25,16 @@ type Db = {
   setup: Map<string, HouseholdSetup>;
   /** Claim code -> pendant, for every code anyone claimed. */
   claimed: Map<string, MockDevice>;
+  /** User id -> their notes (services/mocks/notes.ts), newest first. */
+  notes: Map<string, MockNote[]>;
 };
 
 /** A claimed pendant, in the real API's shape plus the household that holds it. */
 export type MockDevice = S['DeviceOut'] & { householdId: string };
 /** An emergency contact as the mock keeps it: what was sent, plus its id. */
 export type MockContact = S['ContactIn'] & { id: string };
+/** A note as the mock keeps it: the API shape, how many times it was read, and whether processing will fail. */
+export type MockNote = S['NoteOut'] & { reads: number; willFail: boolean };
 
 /** What the mock backend keeps per household during setup. */
 export type HouseholdSetup = {
@@ -58,6 +62,7 @@ const fresh = (): Db => ({
   pushTokens: new Map(),
   setup: new Map(),
   claimed: new Map(),
+  notes: new Map(),
 });
 let db = fresh();
 
@@ -219,6 +224,13 @@ export function householdOf(userId: string, householdId: string): HouseholdOut |
 }
 
 /** The setup record of a household (only households created through POST /circles have one). */
+/** The user's notes, newest first (created on first use). */
+export function notesOf(userId: string): MockNote[] {
+  let list = db.notes.get(userId);
+  if (!list) db.notes.set(userId, (list = []));
+  return list;
+}
+
 export const setupOf = (householdId: string): HouseholdSetup | undefined => db.setup.get(householdId);
 
 /** The household as GET/PATCH /circles answer it. */

@@ -4,6 +4,7 @@ import type { components } from '@/services/api/schema';
 import { newsFilters, sampleNewsPage } from './news';
 import * as reminders from './reminders';
 import * as music from './music';
+import * as notes from './notes';
 import {
   ackDrillFor,
   authenticate,
@@ -66,6 +67,28 @@ const fail = (status: number, code: string, message: string): MockResult => ({
   body: { error: { code, message, request_id: 'mock' } },
 });
 const NO_CONTENT: MockResult = { status: 204 };
+
+/** A notes call for the signed-in user: its answer, or the error the server would send. */
+function noteResult(headers: Headers, run: (userId: string) => unknown, okStatus = 200): MockResult {
+  const auth = authenticate(headers);
+  if ('code' in auth) return fail(401, auth.code, 'Invalid or expired token');
+  const out = run(auth.user.id);
+  if (out && typeof out === 'object' && 'code' in out) {
+    const p = out as { status: number; code: string; details?: Record<string, unknown> };
+    return {
+      status: p.status,
+      body: {
+        error: {
+          code: p.code,
+          message: 'Note problem',
+          request_id: 'mock',
+          ...(p.details && { details: p.details }),
+        },
+      },
+    };
+  }
+  return { status: okStatus, body: out };
+}
 
 /** The `{name}` values when `path` fits the route's pattern, or undefined when it does not. */
 export function matchPath(pattern: string, path: string): Record<string, string> | undefined {
@@ -532,6 +555,47 @@ export const routes: MockRoute[] = [
       const d = drillNow(h.householdId, ctx.params.drill_id ?? '');
       return d ? { status: 200, body: d } : fail(404, 'drill_not_found', 'Drill not found');
     },
+  },
+  // Notes (flags.notesApi): a recording becomes sample notes, one step further on each read. Private to the user.
+  {
+    method: 'GET',
+    path: `${API}/notes`,
+    respond: ({ headers, query }) => {
+      const auth = authenticate(headers);
+      if ('code' in auth) return fail(401, auth.code, 'Invalid or expired token');
+      return { status: 200, body: notes.list(auth.user.id, query) };
+    },
+  },
+  {
+    method: 'POST',
+    path: `${API}/notes`,
+    respond: ({ headers, body }) => noteResult(headers, (userId) => notes.upload(userId, body), 202),
+  },
+  {
+    method: 'GET',
+    path: `${API}/notes/{note_id}`,
+    respond: ({ headers, params }) =>
+      noteResult(headers, (userId) => notes.get(userId, params.note_id ?? '')),
+  },
+  {
+    method: 'PATCH',
+    path: `${API}/notes/{note_id}`,
+    respond: ({ headers, params, body }) =>
+      noteResult(headers, (userId) => notes.rename(userId, params.note_id ?? '', body)),
+  },
+  {
+    method: 'DELETE',
+    path: `${API}/notes/{note_id}`,
+    respond: ({ headers, params }) => {
+      const out = noteResult(headers, (userId) => notes.remove(userId, params.note_id ?? ''));
+      return out.status === 200 ? NO_CONTENT : out;
+    },
+  },
+  {
+    method: 'POST',
+    path: `${API}/notes/{note_id}/retry`,
+    respond: ({ headers, params }) =>
+      noteResult(headers, (userId) => notes.retry(userId, params.note_id ?? ''), 202),
   },
   // Music (flags.musicApi): a small sample catalog with no audio. Needs sign-in, like the server.
   {

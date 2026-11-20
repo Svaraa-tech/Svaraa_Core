@@ -4,6 +4,8 @@ export type Source = 'mock' | 'real';
 type Flags = {
   music: boolean;
   news: boolean;
+  /** The Notes app (record a conversation, get notes). */
+  notes: boolean;
   reminders: boolean;
   /** 'simulator' now; 'ble' once real Bluetooth is wired. */
   pendantTransport: 'simulator' | 'ble';
@@ -24,6 +26,8 @@ type Flags = {
   remindersApi: Source;
   /** The music catalog (GET /music/tracks). EXPO_PUBLIC_REAL_AREAS=musicApi. */
   musicApi: Source;
+  /** Recorded notes (/notes): upload, written-out notes in English and Hindi. EXPO_PUBLIC_REAL_AREAS=notesApi. */
+  notesApi: Source;
 };
 
 /**
@@ -37,6 +41,7 @@ const source = (area: string, value: Source): Source => (realAreas.includes(area
 export const flags: Flags = {
   music: false,
   news: true,
+  notes: true,
   reminders: false,
   pendantTransport: 'simulator',
   googleSignIn: source('googleSignIn', 'mock'),
@@ -47,12 +52,22 @@ export const flags: Flags = {
   newsApi: source('newsApi', 'mock'),
   remindersApi: source('remindersApi', 'mock'),
   musicApi: source('musicApi', 'mock'),
+  notesApi: source('notesApi', 'mock'),
 };
 
 /** Which area an API path belongs to. Paths of no listed area are not switched here. */
 export function areaOf(
   path: string,
-): 'auth' | 'household' | 'notifications' | 'ai' | 'newsApi' | 'remindersApi' | 'musicApi' | undefined {
+):
+  | 'auth'
+  | 'household'
+  | 'notifications'
+  | 'ai'
+  | 'newsApi'
+  | 'remindersApi'
+  | 'musicApi'
+  | 'notesApi'
+  | undefined {
   if (path.startsWith('/api/v1/auth/') || path.startsWith('/api/v1/users/')) return 'auth';
   if (path.startsWith('/api/v1/chat/')) return 'ai';
   if (/^\/api\/v1\/circles\/[^/]+\/reminders(\/|$)/.test(path)) return 'remindersApi';
@@ -61,6 +76,7 @@ export function areaOf(
     return 'household';
   if (path === '/api/v1/me/installations') return 'notifications';
   if (path.startsWith('/api/v1/music/')) return 'musicApi';
+  if (path === '/api/v1/notes' || path.startsWith('/api/v1/notes/')) return 'notesApi';
   if (path === '/api/v1/news' || path.startsWith('/api/v1/news/')) return 'newsApi';
   return undefined;
 }

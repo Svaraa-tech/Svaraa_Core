@@ -255,7 +255,7 @@ function PhoneSchedule({ householdId }: { householdId: string }) {
   );
 }
 
-function BackHeader({ title, right, back }: { title: string; right?: string; back: () => void }) {
+export function BackHeader({ title, right, back }: { title: string; right?: string; back: () => void }) {
   const { t } = useTranslation();
   const p = useMainPalette();
   return (
@@ -280,7 +280,7 @@ function BackHeader({ title, right, back }: { title: string; right?: string; bac
 }
 
 /** An underlined text button (Pause, Renew, Delete). */
-function LinkButton({ label, onPress, busy }: { label: string; onPress: () => void; busy?: boolean }) {
+export function LinkButton({ label, onPress, busy }: { label: string; onPress: () => void; busy?: boolean }) {
   const p = useMainPalette();
   return (
     <Pressable

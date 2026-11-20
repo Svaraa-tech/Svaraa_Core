@@ -16,6 +16,7 @@ import { APP_IDS, AppView, type AppId } from './AppViews';
 export const APP_ICON: Record<AppId | 'profile', IconName> = {
   music: 'music',
   reminders: 'remind',
+  notes: 'note',
   responses: 'resp',
   news: 'news',
   games: 'game',

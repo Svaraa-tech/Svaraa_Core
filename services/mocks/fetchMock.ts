@@ -1,4 +1,5 @@
 import { env, isMocked } from '@/config/env';
+import { readBody } from './readBody';
 import { matchPath, routes } from './routes';
 
 /**
@@ -14,7 +15,7 @@ export function createMockFetch(realFetch: typeof fetch): typeof fetch {
       const path = url.slice(env.apiUrl.length).split('?')[0];
       const route = routes.find((r) => r.method === request.method && matchPath(r.path, path));
       if (route && isMocked(route.method, route.path)) {
-        const body = route.method === 'GET' ? undefined : await request.json().catch(() => undefined);
+        const body = await readBody(request);
         const params = matchPath(route.path, path) ?? {};
         const out = route.respond({
           body,

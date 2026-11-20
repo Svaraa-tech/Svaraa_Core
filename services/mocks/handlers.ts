@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw';
 import { env, isMocked } from '@/config/env';
+import { readBody } from './readBody';
 import { routes } from './routes';
 
 export { DEMO_CODE } from './routes';
@@ -18,7 +19,7 @@ export const handlers = routes
   .map((r) =>
     // MSW writes path parameters as :name, docs/openapi.json as {name}.
     verb[r.method](`${env.apiUrl}${r.path.replace(/\{(\w+)\}/g, ':$1')}`, async ({ request, params }) => {
-      const body = r.method === 'GET' ? undefined : await request.json().catch(() => undefined);
+      const body = await readBody(request);
       const out = r.respond({
         body,
         headers: request.headers,

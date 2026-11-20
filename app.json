@@ -40,9 +40,7 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Svaraa uses the camera to scan the code in your pendant's box.",
-          "microphonePermission": false,
-          "recordAudioAndroid": false
+          "cameraPermission": "Svaraa uses the camera to scan the code in your pendant's box."
         }
       ],
       [
@@ -54,7 +52,12 @@
           "isIosBackgroundLocationEnabled": true
         }
       ],
-      "expo-audio",
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Svaraa uses the microphone to record a conversation for your notes, only when you start it."
+        }
+      ],
       "expo-web-browser"
     ]
   }

@@ -40,6 +40,13 @@ const CODE_TABLE = {
   invalid_circle_state: true,
   insufficient_role: true,
   circle_not_found: true,
+  // Notes
+  note_not_found: true,
+  notes_unavailable: true,
+  notes_daily_limit_reached: true,
+  recording_too_long: true,
+  note_not_failed: true,
+  note_audio_gone: true,
   // Generic
   validation_error: true,
   bad_request: true,
