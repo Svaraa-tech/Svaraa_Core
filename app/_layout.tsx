@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 import { Stack } from 'expo-router';
 import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
@@ -7,7 +8,9 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import '@/i18n';
 import { env } from '@/config/env';
 import { useHousehold } from '@/features/household/store';
+import { DueBanner } from '@/features/reminders/DueBanner';
 import { useScheduleSync } from '@/features/reminders/store';
+import { useReminderAlerts } from '@/features/reminders/useReminderAlerts';
 import { DRAFT_HOUSEHOLD_ID } from '@/services/household/householdApi';
 import { restoreLanguage } from '@/features/settings/language';
 import { useSettings } from '@/features/settings/store';
@@ -42,11 +45,15 @@ function useSessionEffects() {
   // The wearer's phone asks for the reminder schedule now, every 5 minutes, and when the app comes back.
   const householdId = useHousehold((s) => s.householdId);
   const active = useHousehold((s) => s.hasActiveDevice);
+  // On the web any member of the household reads it too, so the open page can alert (useReminderAlerts).
+  const wearerPhone = role === 'wearer' && active;
+  const webMember = Platform.OS === 'web' && !!role;
   useScheduleSync(
-    userId && role === 'wearer' && active && householdId && householdId !== DRAFT_HOUSEHOLD_ID
+    userId && (wearerPhone || webMember) && householdId && householdId !== DRAFT_HOUSEHOLD_ID
       ? householdId
       : undefined,
   );
+  useReminderAlerts();
 }
 
 function Screens() {
@@ -90,6 +97,7 @@ function Screens() {
         </Stack.Protected>
         <Stack.Screen name="(dev)/components" />
       </Stack>
+      <DueBanner />
     </>
   );
 }

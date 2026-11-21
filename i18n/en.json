@@ -654,7 +654,15 @@
       "intro": "Quick replies Svaraa can send for you.",
       "fine": "“I'm fine, will call you later.”",
       "call": "“Please call me when you're free.”",
-      "medicine": "“I've taken my medicine.”"
+      "medicine": "“I've taken my medicine.”",
+      "history": "Chat history",
+      "noHistory": "No chats yet. Your chats with Svaraa appear here.",
+      "historyError": "We could not load your chat history.",
+      "read": "Read",
+      "hide": "Hide",
+      "you": "You",
+      "svaraa": "Svaraa",
+      "continue": "Continue in Chat"
     },
     "pendant": {
       "name": "Svaraa pendant"
@@ -895,6 +903,19 @@
       "app": "Added in the app.",
       "voice": "Added by voice.",
       "chat": "Added by asking Svaraa in chat."
+    },
+    "alert": {
+      "title": "Reminder",
+      "allow": "Allow alerts",
+      "blocked": "Browser notifications are blocked for this site. The beep and the banner still work. To get notifications, allow them in the browser settings.",
+      "pageOpen": "While this page is open, a beep and a message appear when a reminder is due.",
+      "response": {
+        "done": "Done",
+        "pending": "Pending",
+        "discuss": "Discuss",
+        "dismissed": "Dismiss"
+      },
+      "discussDraft": "About my reminder “{{text}}”: "
     }
   },
   "manage": {

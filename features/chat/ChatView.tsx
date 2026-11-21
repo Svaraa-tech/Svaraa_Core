@@ -10,6 +10,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { DotPill, RoundButton, Segmented, useMainPalette } from '@/features/main/palette';
 import { Logo, LogoMark, Text, fontFamily, useTheme } from '@/ui';
+import { useHousehold } from '@/features/household/store';
+import { useReminderSchedule } from '@/features/reminders/store';
 import { useChat, usePendingCount, type ChatMessage } from './store';
 import { VoiceOverlay } from './VoiceView';
 
@@ -63,9 +65,12 @@ export function ChatView({ compact, centered }: { compact?: boolean; centered?: 
     if (!canSend) return;
     dictation.current?.stop();
     // Svaraa may have set a reminder from this message: have the Reminders list read the server again.
-    void send(draft, { failed: t('chat.failed') }).then(() =>
-      queryClient.invalidateQueries({ queryKey: ['reminders'] }),
-    );
+    void send(draft, { failed: t('chat.failed') }).then(() => {
+      void queryClient.invalidateQueries({ queryKey: ['reminders'] });
+      // On the web the open page alerts from the schedule, so read it again now, not at the next 5-minute check.
+      const id = useHousehold.getState().householdId;
+      if (Platform.OS === 'web' && id) void useReminderSchedule.getState().sync(id, true);
+    });
   };
   const body = theme.typeScale.body;
   const width = centered ? ({ width: '100%', maxWidth: 780, alignSelf: 'center' } as const) : null;

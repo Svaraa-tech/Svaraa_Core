@@ -138,6 +138,8 @@ type ChatState = {
   setDraft: (d: string) => void;
   newChat: () => void;
   open: (id: string) => void;
+  /** Fetch a server chat's messages if they are not here yet (the chat is not opened). */
+  loadMessages: (id: string) => Done;
   /** Sends the message to Svaraa (POST /chat/) and adds the reply when it arrives. `failed` is already translated. */
   send(text: string, copy: { failed: string }): Promise<void>;
   decide: (chatId: string, index: number, status: 'done' | 'cancelled') => void;
@@ -187,17 +189,21 @@ export const useChat = create<ChatState>((set, get) => ({
   newChat: () => set({ currentId: undefined, draft: '' }),
   open: (id) => {
     set({ currentId: id });
+    void get().loadMessages(id);
+  },
+  loadMessages: async (id) => {
     const chat = get().conversations.find((c) => c.id === id);
     if (!chat?.needsMessages || !chat.sessionId) return;
-    void getMessages(chat.sessionId)
-      .then((page) =>
-        set((s) => ({
-          conversations: s.conversations.map((c) =>
-            c.id === id ? { ...c, needsMessages: false, messages: page.items.map(toMessage) } : c,
-          ),
-        })),
-      )
-      .catch(() => undefined);
+    try {
+      const page = await getMessages(chat.sessionId);
+      set((s) => ({
+        conversations: s.conversations.map((c) =>
+          c.id === id ? { ...c, needsMessages: false, messages: page.items.map(toMessage) } : c,
+        ),
+      }));
+    } catch {
+      /* the chat stays as it is: opening it again tries again */
+    }
   },
   loadHistory: async () => {
     if (!serverHistory() || get().history === 'loading' || get().history === 'ready') return;

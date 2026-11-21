@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, Switch, View } from 'react-native';
+import { ActivityIndicator, Platform, Pressable, Switch, View } from 'react-native';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useErrorText } from '@/features/auth/useErrorText';
@@ -36,6 +36,7 @@ import {
   type Draft,
   type Kind,
 } from './logic';
+import { AlertPermission } from './AlertPermission';
 import { useReminderSchedule } from './store';
 
 type Screen = { kind: 'list' } | { kind: 'form'; id?: string } | { kind: 'detail'; id: string };
@@ -123,7 +124,9 @@ function useAfterChange() {
   const role = useHousehold((s) => s.role);
   return async () => {
     await queryClient.invalidateQueries({ queryKey: listKey(householdId) });
-    if (householdId && role === 'wearer') void useReminderSchedule.getState().sync(householdId, true);
+    // The wearer's phone, and the open page on the web, hold the schedule and alert from it.
+    if (householdId && (role === 'wearer' || Platform.OS === 'web'))
+      void useReminderSchedule.getState().sync(householdId, true);
   };
 }
 
@@ -159,6 +162,7 @@ function List({ open, add }: { open: (id: string) => void; add: () => void }) {
         </Text>
         <IconButton icon="plus" label={t('reminders.new')} onPress={add} />
       </View>
+      <AlertPermission />
       {data ? (
         <Text variant="bodySm" style={{ color: p.muted }}>
           {t('reminders.count', { used: data.count, limit: data.limit })}

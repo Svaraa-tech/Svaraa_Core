@@ -38,6 +38,8 @@ For the person who connects the app to the server. Simple steps, no coding knowl
 
 "Draft ready" means the endpoint exists in `docs/openapi.json` and the app already calls it the right way. It has not been tried against the live server.
 "Live (web)" means it has been tried in the browser (localhost:5173) against the real server. Nothing is Live on a phone yet.
+Reminder alerts on the web (page open only): the app reads `GET /circles/{id}/reminders/schedule` for any household member on the web, sets a timer per `due_at`, and at that time beeps once, shows a banner and, if allowed, a browser notification (`features/reminders/useReminderAlerts.ts`). A closed page cannot alert: that needs web push, which the backend does not have (no push sender, no scheduler, `/me/installations` takes android and ios only).
+
 "Server checked" means each endpoint was tried on the live Render server with direct requests (the server's earlier `500` on `GET /me/home` and `POST /circles` is fixed), but not yet through the app on a phone. To use them: `EXPO_PUBLIC_REAL_AREAS=auth,googleSignIn,ai,household,notifications,newsApi,remindersApi,musicApi,notesApi,spotifyApi`, then restart.
 
 ## How to connect one area to the real backend

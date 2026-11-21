@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { flags } from '@/config/flags';
 import { GamesView } from '@/features/games/GamesView';
 import { MusicView } from '@/features/music/MusicView';
+import { ResponsesView } from './ResponsesView';
 import { RemindersView } from '@/features/reminders/RemindersView';
 import { NewsView } from '@/features/news/NewsView';
 import { NotesView } from '@/features/notes/NotesView';
@@ -22,20 +23,6 @@ export const APP_IDS: AppId[] = (
 ).filter((id) => (id !== 'news' || flags.news) && (id !== 'notes' || flags.notes));
 
 const Row = InfoRow;
-
-/** PENDING BACKEND: Responses shows the sample content from the wireframes until its API exists. */
-function Responses() {
-  const { t } = useTranslation();
-  const p = useMainPalette();
-  return (
-    <>
-      <Text style={{ color: p.muted }}>{t('apps.responses.intro')}</Text>
-      {(['fine', 'call', 'medicine'] as const).map((k) => (
-        <Row key={k} title={t(`apps.responses.${k}`)} />
-      ))}
-    </>
-  );
-}
 
 function Pendant() {
   const { t } = useTranslation();
@@ -102,7 +89,7 @@ const VIEWS: Record<AppId, () => ReactNode> = {
   music: MusicView,
   reminders: RemindersView,
   notes: NotesView,
-  responses: Responses,
+  responses: ResponsesView,
   news: NewsView,
   games: GamesView,
   pendant: Pendant,
