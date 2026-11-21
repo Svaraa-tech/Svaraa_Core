@@ -6,6 +6,7 @@ import {
   type DictationError,
 } from '@/services/voice/dictation';
 import { Platform, Pressable, ScrollView, TextInput, View } from 'react-native';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { DotPill, RoundButton, Segmented, useMainPalette } from '@/features/main/palette';
 import { Logo, LogoMark, Text, fontFamily, useTheme } from '@/ui';
@@ -23,6 +24,7 @@ export function ChatView({ compact, centered }: { compact?: boolean; centered?: 
   const p = useMainPalette();
   const { conversations, currentId, draft, voiceOpen, waitingId, setDraft, setVoiceOpen, send, decide } =
     useChat();
+  const queryClient = useQueryClient();
   const pending = usePendingCount();
   const chat = conversations.find((x) => x.id === currentId);
   const waiting = !!chat && waitingId === chat.id;
@@ -60,7 +62,10 @@ export function ChatView({ compact, centered }: { compact?: boolean; centered?: 
   const submit = () => {
     if (!canSend) return;
     dictation.current?.stop();
-    void send(draft, { failed: t('chat.failed') });
+    // Svaraa may have set a reminder from this message: have the Reminders list read the server again.
+    void send(draft, { failed: t('chat.failed') }).then(() =>
+      queryClient.invalidateQueries({ queryKey: ['reminders'] }),
+    );
   };
   const body = theme.typeScale.body;
   const width = centered ? ({ width: '100%', maxWidth: 780, alignSelf: 'center' } as const) : null;

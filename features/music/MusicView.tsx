@@ -5,14 +5,37 @@ import { useTranslation } from 'react-i18next';
 import { useErrorText } from '@/features/auth/useErrorText';
 import { InfoRow, Pill, useMainPalette } from '@/features/main/palette';
 import { listTracks, TRACK_CATEGORIES, type Track, type TrackCategory } from '@/services/music/musicApi';
-import { Button, Choice, Input, Text, useTheme } from '@/ui';
+import { Button, Choice, Input, Tabs, Text, useTheme } from '@/ui';
 import { NotPlayable, useMusicPlayer } from './player';
+import { SpotifyView } from './SpotifyView';
 
 type Category = TrackCategory | 'all';
 const SEARCH_DELAY_MS = 500;
 
-/** Music app: old film songs and bhajans from the server, with search and a simple player. */
+type Source = 'songs' | 'spotify';
+
+/** Music app: the Songs tab (the server's catalog) and the Spotify tab (connect Spotify, now playing, player). */
 export function MusicView() {
+  const { t } = useTranslation();
+  const theme = useTheme();
+  const [source, setSource] = useState<Source>('songs');
+  return (
+    <View style={{ gap: theme.space[3] }}>
+      <Tabs<Source>
+        tabs={[
+          { id: 'songs', label: t('music.tabSongs') },
+          { id: 'spotify', label: t('music.tabSpotify') },
+        ]}
+        value={source}
+        onChange={setSource}
+      />
+      {source === 'songs' ? <SongsTab /> : <SpotifyView />}
+    </View>
+  );
+}
+
+/** Old film songs and bhajans from the server, with search and a simple player. */
+function SongsTab() {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
   const p = useMainPalette();

@@ -146,7 +146,9 @@
     "note_audio_gone": "This recording has been deleted, so it cannot be tried again.",
     "invalid_reminder_rule": "Check how often it repeats: the end time must be after the start time.",
     "google_sign_in_unavailable": "Google sign-in is not available in this version of the app. Use your phone number instead.",
-    "google_sign_in_failed": "Google sign-in did not work. Try again, or use your phone number."
+    "google_sign_in_failed": "Google sign-in did not work. Try again, or use your phone number.",
+    "spotify_error": "Spotify did not answer. Try again in a moment.",
+    "spotify_playlist_not_listable": "Spotify does not let us list the songs of this playlist. You can still play the whole playlist."
   },
   "tabs": {
     "alerts": "Alerts",
@@ -630,7 +632,11 @@
     "searchYours": "Search your chats",
     "noMatchesFor": "No chats match “{{q}}”.",
     "newTitle": "New chat",
-    "call": "Talk to Svaraa"
+    "call": "Talk to Svaraa",
+    "untitled": "Untitled chat",
+    "deleteAll": "Delete all chats",
+    "deleteAllSure": "Tap again to delete every chat",
+    "deleteFailed": "We could not delete your chats. Try again."
   },
   "apps": {
     "name": {
@@ -875,8 +881,6 @@
     "cancel": "Cancel",
     "nextLabel": "Next",
     "endsLabel": "Runs until",
-    "madeByVoice": "Added by voice.",
-    "madeInApp": "Added in the app.",
     "editButton": "Edit",
     "renew": "Renew for 90 days",
     "pause": "Pause reminder",
@@ -886,7 +890,12 @@
     "at": "{{day}}, {{time}}",
     "today": "Today",
     "tomorrow": "Tomorrow",
-    "forShort": "for {{name}}"
+    "forShort": "for {{name}}",
+    "made": {
+      "app": "Added in the app.",
+      "voice": "Added by voice.",
+      "chat": "Added by asking Svaraa in chat."
+    }
   },
   "manage": {
     "title": "Manage apps",
@@ -944,7 +953,68 @@
     "noMatches": "No songs found for “{{q}}”.",
     "count": "{{n}} songs",
     "soon": "Coming soon",
-    "onPhone": "Songs play on this phone. Tap a song to play it."
+    "onPhone": "Songs play on this phone. Tap a song to play it.",
+    "tabsLabel": "Music source",
+    "tabSongs": "Songs",
+    "tabSpotify": "Spotify",
+    "spotify": {
+      "intro": "Connect Spotify to play your own music on this phone. Spotify Premium is needed to play.",
+      "connect": "Connect Spotify",
+      "waiting": "Finish signing in to Spotify, then come back here.",
+      "connected": "Connected",
+      "connectedAs": "Spotify: {{name}}",
+      "needsPremium": "Spotify Premium is needed to play music from here.",
+      "nowPlaying": "Now playing on Spotify",
+      "nothingPlaying": "Nothing is playing. Press Play to continue, or ask Svaraa for a song.",
+      "onDevice": "On {{name}}",
+      "previous": "Previous",
+      "next": "Next",
+      "volume": "Volume {{n}}%",
+      "quieter": "Quieter",
+      "louder": "Louder",
+      "askSvaraa": "To start a new song, ask Svaraa.",
+      "devices": "Devices",
+      "active": "Playing here",
+      "noDevices": "Open the Spotify app on this phone or a speaker so Svaraa can play on it.",
+      "disconnect": "Disconnect Spotify",
+      "libraryLabel": "Your Spotify",
+      "section": {
+        "recent": "Recent",
+        "top": "Most played",
+        "liked": "Liked songs",
+        "playlists": "Playlists"
+      },
+      "empty": {
+        "recent": "Nothing played recently.",
+        "top": "No most played songs yet.",
+        "liked": "No liked songs yet.",
+        "playlists": "No playlists yet."
+      },
+      "search": {
+        "label": "Search Spotify",
+        "placeholder": "Song, singer, album or playlist"
+      },
+      "noMatches": "Nothing found for “{{q}}”.",
+      "results": {
+        "tracks": "Songs",
+        "artists": "Artists",
+        "albums": "Albums",
+        "playlists": "Playlists"
+      },
+      "kind": {
+        "track": "Song",
+        "album": "Album",
+        "artist": "Artist",
+        "playlist": "Playlist"
+      },
+      "back": "Back",
+      "playAll": "Play all",
+      "more": "Show more",
+      "noTracks": "No songs here.",
+      "notListable": "Spotify does not let us list the songs of this playlist. You can still play the whole playlist.",
+      "needsReconnect": "Connect Spotify again to see your recent, most played and liked songs and your playlists. Playing still works.",
+      "reconnect": "Connect again"
+    }
   },
   "notes": {
     "title": "Notes",

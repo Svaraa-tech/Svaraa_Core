@@ -615,7 +615,7 @@ function Detail({ id, back, edit }: { id: string; back: () => void; edit: () => 
         detail={r.repeat_until_confirmed ? t('reminders.persistDetail') : t('reminders.persistOff')}
       />
       <Text variant="bodySm" style={{ color: p.muted }}>
-        {t(r.created_via === 'voice' ? 'reminders.madeByVoice' : 'reminders.madeInApp')}
+        {t(`reminders.made.${r.created_via}`)}
       </Text>
       {act.isError ? (
         <Text tone="safety" accessibilityRole="alert">

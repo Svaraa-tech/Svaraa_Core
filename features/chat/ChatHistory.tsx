@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, TextInput, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useGreetingName } from '@/features/home/useGreetingName';
@@ -35,7 +35,10 @@ export function ChatList({
   const theme = useTheme();
   const { t } = useTranslation();
   const p = useMainPalette();
-  const { conversations, currentId } = useChat();
+  const { conversations, currentId, loadHistory } = useChat();
+  useEffect(() => {
+    void loadHistory();
+  }, [loadHistory]);
   const ago = useTimeAgo();
   const groups = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -87,7 +90,7 @@ export function ChatList({
                   numberOfLines={1}
                   style={{ color: p.ink, fontSize: 14, fontWeight: current ? '600' : '400' }}
                 >
-                  {x.title}
+                  {x.title || t('chat.untitled')}
                 </Text>
                 {showTime ? (
                   <Text variant="caption" style={{ color: p.muted }}>

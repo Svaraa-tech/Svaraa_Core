@@ -26,6 +26,8 @@ type Flags = {
   remindersApi: Source;
   /** The music catalog (GET /music/tracks). EXPO_PUBLIC_REAL_AREAS=musicApi. */
   musicApi: Source;
+  /** Spotify connect, now playing and player buttons (/spotify/*). EXPO_PUBLIC_REAL_AREAS=spotifyApi. */
+  spotifyApi: Source;
   /** Recorded notes (/notes): upload, written-out notes in English and Hindi. EXPO_PUBLIC_REAL_AREAS=notesApi. */
   notesApi: Source;
 };
@@ -52,6 +54,7 @@ export const flags: Flags = {
   newsApi: source('newsApi', 'mock'),
   remindersApi: source('remindersApi', 'mock'),
   musicApi: source('musicApi', 'mock'),
+  spotifyApi: source('spotifyApi', 'mock'),
   notesApi: source('notesApi', 'mock'),
 };
 
@@ -66,6 +69,7 @@ export function areaOf(
   | 'newsApi'
   | 'remindersApi'
   | 'musicApi'
+  | 'spotifyApi'
   | 'notesApi'
   | undefined {
   if (path.startsWith('/api/v1/auth/') || path.startsWith('/api/v1/users/')) return 'auth';
@@ -76,6 +80,7 @@ export function areaOf(
     return 'household';
   if (path === '/api/v1/me/installations') return 'notifications';
   if (path.startsWith('/api/v1/music/')) return 'musicApi';
+  if (path.startsWith('/api/v1/spotify/')) return 'spotifyApi';
   if (path === '/api/v1/notes' || path.startsWith('/api/v1/notes/')) return 'notesApi';
   if (path === '/api/v1/news' || path.startsWith('/api/v1/news/')) return 'newsApi';
   return undefined;

@@ -47,6 +47,9 @@ const CODE_TABLE = {
   recording_too_long: true,
   note_not_failed: true,
   note_audio_gone: true,
+  // Spotify
+  spotify_error: true,
+  spotify_playlist_not_listable: true,
   // Generic
   validation_error: true,
   bad_request: true,

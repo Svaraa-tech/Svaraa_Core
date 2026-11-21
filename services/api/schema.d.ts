@@ -1318,7 +1318,7 @@ export interface paths {
         put?: never;
         /**
          * Chat
-         * @description Text-in / text-out chat. Creates a session if none is provided.
+         * @description Send a message, get Svaraa's reply. Starts a conversation when `conversation_id` is left out.
          */
         post: operations["chat_api_v1_chat__post"];
         delete?: never;
@@ -1338,8 +1338,11 @@ export interface paths {
         put?: never;
         /**
          * Chat Stream
-         * @description Streaming chat â€” returns server-sent events so the frontend can
-         *     display tokens as they arrive (ChatGPT-style typing effect).
+         * @description Streaming chat: server-sent events so the app can show the reply as it is written.
+         *
+         *     Events: {"conversation_id", "session_id"} first, then {"token"} pieces, with {"event": {...}} app actions
+         *     (e.g. music) whenever a tool emits one, and finally {"done": true}. On failure an {"error": {...}} event is
+         *     sent instead of "done" and nothing is saved to history.
          */
         post: operations["chat_stream_api_v1_chat_stream_post"];
         delete?: never;
@@ -1377,6 +1380,298 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/conversations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * My conversations, most recent first
+         * @description Typed chat and voice conversations. Continue one by sending its `id` as `conversation_id` to POST /chat/ or the voice WebSocket.
+         */
+        get: operations["list_conversations_api_v1_conversations_get"];
+        put?: never;
+        post?: never;
+        /** Delete all my chat history */
+        delete: operations["delete_all_conversations_api_v1_conversations_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/conversations/{conversation_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One conversation */
+        get: operations["get_conversation_api_v1_conversations__conversation_id__get"];
+        put?: never;
+        post?: never;
+        /** Delete a conversation and its messages */
+        delete: operations["delete_conversation_api_v1_conversations__conversation_id__delete"];
+        options?: never;
+        head?: never;
+        /** Rename a conversation */
+        patch: operations["rename_conversation_api_v1_conversations__conversation_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/conversations/{conversation_id}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Messages of a conversation
+         * @description Without `before`: the newest messages. Scrolling up: pass `older_cursor` as `before` for the page above. Each page is oldest first.
+         */
+        get: operations["list_messages_api_v1_conversations__conversation_id__messages_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/spotify/login-url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Get the Spotify login link */
+        post: operations["login_url_api_v1_spotify_login_url_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/spotify/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Is my Spotify connected? */
+        get: operations["status_api_v1_spotify_status_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/spotify/now-playing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** What's playing on my Spotify (for a mini player) */
+        get: operations["now_playing_api_v1_spotify_now_playing_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/spotify/player": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Play, pause, skip or set the volume on my Spotify
+         * @description For the app's own buttons. `play` resumes what was playing; to start something new, ask Svaraa.
+         *     Returns the player state after the command (Spotify can take a moment to report the change).
+         */
+        post: operations["player_api_v1_spotify_player_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/spotify/recent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Songs I played recently on Spotify, newest first */
+        get: operations["recent_api_v1_spotify_recent_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/spotify/top": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My most played songs */
+        get: operations["top_api_v1_spotify_top_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/spotify/liked": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My liked songs, newest first */
+        get: operations["liked_api_v1_spotify_liked_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/spotify/playlists": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My playlists (made or followed) */
+        get: operations["playlists_api_v1_spotify_playlists_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/spotify/playlists/{playlist_id}/tracks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Songs in one of my playlists
+         * @description Works for playlists the user made or collaborates on. Spotify won't list other playlists for this app (`403 spotify_playlist_not_listable`); play those as a whole with POST /spotify/play.
+         */
+        get: operations["playlist_tracks_api_v1_spotify_playlists__playlist_id__tracks_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/spotify/albums/{album_id}/tracks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Songs of an album */
+        get: operations["album_tracks_api_v1_spotify_albums__album_id__tracks_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/spotify/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search all of Spotify */
+        get: operations["search_api_v1_spotify_search_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/spotify/play": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Play a song, album, artist or playlist on my Spotify
+         * @description Tapping a card: plays it on the user's active Spotify device (or their phone if none is active).
+         *     A song tapped inside a playlist or album: send the song as `uri` and the playlist or album as `context_uri`.
+         */
+        post: operations["play_api_v1_spotify_play_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/spotify/link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Disconnect my Spotify */
+        delete: operations["unlink_api_v1_spotify_link_delete"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1516,22 +1811,39 @@ export interface components {
         };
         /** ChatRequest */
         ChatRequest: {
-            /** Session Id */
-            session_id?: string | null;
             /** Message */
             message: string;
+            /**
+             * Conversation Id
+             * @description Continue this conversation. Leave out to start a new one
+             */
+            conversation_id?: string | null;
+            /**
+             * Session Id
+             * @description Deprecated: the old name of conversation_id
+             */
+            session_id?: string | null;
+            /**
+             * Install Id
+             * @description Deprecated and ignored: Spotify now follows the signed-in user
+             */
+            install_id?: string | null;
         };
         /** ChatResponse */
         ChatResponse: {
-            /** Session Id */
+            /**
+             * Conversation Id
+             * Format: uuid
+             */
+            conversation_id: string;
+            /**
+             * Session Id
+             * Format: uuid
+             * @description Deprecated: same as conversation_id
+             */
             session_id: string;
             /** Response */
             response: string;
-            /**
-             * Expires At
-             * Format: date-time
-             */
-            expires_at: string;
             /**
              * Events
              * @description Actions for the app, same shape as on the voice WebSocket, e.g. {"type": "music", "action": "play", "tracks": [...]}
@@ -2524,9 +2836,10 @@ export interface components {
             created_by: string | null;
             /**
              * Created Via
+             * @description Where it was set: the Reminders screen, or by asking Svaraa in chat or voice
              * @enum {string}
              */
-            created_via: "app" | "voice";
+            created_via: "app" | "chat" | "voice";
             /**
              * Created At
              * Format: date-time
@@ -2957,6 +3270,283 @@ export interface components {
              * Format: date-time
              */
             expires_at: string;
+        };
+        /** ConversationTitleIn */
+        ConversationTitleIn: {
+            /** Title */
+            title: string;
+        };
+        /** PlayerIn */
+        PlayerIn: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "play" | "pause" | "next" | "previous" | "volume";
+            /**
+             * Volume Percent
+             * @description Required for action=volume
+             */
+            volume_percent?: number | null;
+        };
+        /** PlayIn */
+        PlayIn: {
+            /**
+             * Uri
+             * @description What to play: spotify:track:…, spotify:album:…, spotify:playlist:… or spotify:artist:…
+             */
+            uri: string;
+            /**
+             * Context Uri
+             * @description Optional: the album or playlist the song was tapped in, so playback continues with the rest of it (send the song as `uri`)
+             */
+            context_uri?: string | null;
+        };
+        /** StatusOut */
+        StatusOut: {
+            /** Connected */
+            connected: boolean;
+            /**
+             * Needs Reconnect
+             * @description Linked before the library permissions existed: ask the user to connect Spotify again to see recent, top, liked songs and playlists. Playback still works meanwhile
+             * @default false
+             */
+            needs_reconnect: boolean;
+            /** Display Name */
+            display_name?: string | null;
+            /**
+             * Product
+             * @description "premium" is needed for playback
+             */
+            product?: string | null;
+            /**
+             * Devices
+             * @description Phones, computers and speakers with Spotify open (the Spotify web player counts). Empty: nothing to play on yet
+             * @default []
+             */
+            devices: components["schemas"]["app__api__v1__spotify__DeviceOut"][];
+        };
+        /** LoginUrlIn */
+        LoginUrlIn: {
+            /**
+             * Client
+             * @description Where the user is sent back after logging in: the phone app (deep link) or the web app
+             * @default app
+             * @enum {string}
+             */
+            client: "app" | "web";
+        };
+        /** DeletedOut */
+        DeletedOut: {
+            /** Deleted */
+            deleted: number;
+        };
+        /** MessageListOut */
+        MessageListOut: {
+            /**
+             * Items
+             * @description Oldest first, ready to show top to bottom
+             */
+            items: components["schemas"]["MessageOut"][];
+            /**
+             * Older Cursor
+             * @description Pass as `before` to load the page above these (older messages). Empty at the start of the conversation
+             */
+            older_cursor: string | null;
+        };
+        /** ConversationOut */
+        ConversationOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Title
+             * @description The first thing the user said, shortened; or the name they gave it
+             */
+            title: string | null;
+            /**
+             * Channel
+             * @description Where the conversation started
+             * @enum {string}
+             */
+            channel: "chat" | "voice";
+            /** Message Count */
+            message_count: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Last Message At
+             * Format: date-time
+             */
+            last_message_at: string;
+        };
+        /** DeviceOut */
+        app__api__v1__spotify__DeviceOut: {
+            /** Name */
+            name: string;
+            /** Type */
+            type: string;
+            /** Is Active */
+            is_active: boolean;
+        };
+        /** LoginUrlOut */
+        LoginUrlOut: {
+            /**
+             * Url
+             * @description Open it: an in-app browser tab on the phone, or the same or a new tab on the web. Valid for 10 minutes, single use.
+             */
+            url: string;
+        };
+        /** MessageOut */
+        MessageOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "user" | "assistant";
+            /** Content */
+            content: string;
+            /**
+             * Events
+             * @description App events this reply caused, e.g. {"type": "music", "action": "play", "tracks": [...]}. Song links are not kept: get a fresh one from GET /music/tracks/{id}
+             */
+            events?: {
+                [key: string]: unknown;
+            }[];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** NowPlayingOut */
+        NowPlayingOut: {
+            /** Is Playing */
+            is_playing: boolean;
+            /** @description Empty when nothing is loaded, or an ad or podcast is on */
+            track?: components["schemas"]["TrackNowOut"] | null;
+            /** Progress Ms */
+            progress_ms?: number | null;
+            device?: components["schemas"]["app__api__v1__spotify__DeviceOut"] | null;
+            /**
+             * Volume Percent
+             * @description Empty when the device doesn't allow remote volume
+             */
+            volume_percent?: number | null;
+        };
+        /** ConversationListOut */
+        ConversationListOut: {
+            /** Items */
+            items: components["schemas"]["ConversationOut"][];
+            /**
+             * Next Cursor
+             * @description Pass as `cursor` for the next (older) page. Empty on the last page
+             */
+            next_cursor: string | null;
+        };
+        /** SearchOut */
+        SearchOut: {
+            /**
+             * Tracks
+             * @default []
+             */
+            tracks: components["schemas"]["MediaItemOut"][];
+            /**
+             * Artists
+             * @default []
+             */
+            artists: components["schemas"]["MediaItemOut"][];
+            /**
+             * Albums
+             * @default []
+             */
+            albums: components["schemas"]["MediaItemOut"][];
+            /**
+             * Playlists
+             * @default []
+             */
+            playlists: components["schemas"]["MediaItemOut"][];
+        };
+        /**
+         * MediaItemOut
+         * @description One card in a Spotify row: a song, album, artist or playlist. Play it with POST /spotify/play {uri}.
+         */
+        MediaItemOut: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "track" | "album" | "artist" | "playlist";
+            /** Id */
+            id: string;
+            /**
+             * Uri
+             * @description Pass to POST /spotify/play
+             */
+            uri: string;
+            /** Name */
+            name: string;
+            /**
+             * Subtitle
+             * @description Singers for a song or album, owner for a playlist
+             */
+            subtitle?: string | null;
+            /** Image Url */
+            image_url?: string | null;
+            /**
+             * Duration Ms
+             * @description Songs only
+             */
+            duration_ms?: number | null;
+            /**
+             * Track Count
+             * @description Playlists only
+             */
+            track_count?: number | null;
+            /**
+             * Played At
+             * @description Recently played only (ISO time)
+             */
+            played_at?: string | null;
+        };
+        /** MediaPageOut */
+        MediaPageOut: {
+            /** Items */
+            items: components["schemas"]["MediaItemOut"][];
+            /**
+             * Next Offset
+             * @description Pass as `offset` for the next page. Empty on the last page
+             */
+            next_offset?: number | null;
+        };
+        /** TrackNowOut */
+        TrackNowOut: {
+            /** Name */
+            name: string;
+            /**
+             * Artists
+             * @description Comma-separated singer names
+             */
+            artists: string;
+            /** Album */
+            album?: string | null;
+            /**
+             * Image Url
+             * @description Album cover, the largest Spotify offers
+             */
+            image_url?: string | null;
+            /** Duration Ms */
+            duration_ms?: number | null;
         };
     };
     responses: never;
@@ -7702,7 +8292,10 @@ export interface operations {
     chat_api_v1_chat__post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description The caller's IANA timezone, e.g. `Asia/Kolkata`. Local times in the request (a reminder's `starts_at`) are read in this zone. Defaults to `Asia/Kolkata` when absent; an unknown name is `400 invalid_timezone`. */
+                "x-timezone"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -7721,13 +8314,40 @@ export interface operations {
                     "application/json": components["schemas"]["ChatResponse"];
                 };
             };
-            /** @description Validation Error */
+            /** @description Bad request, e.g. `invalid_mobile_number` */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ... */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found, or you are not a member: `circle_not_found` */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon` */
             422: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
         };
@@ -7735,7 +8355,10 @@ export interface operations {
     chat_stream_api_v1_chat_stream_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description The caller's IANA timezone, e.g. `Asia/Kolkata`. Local times in the request (a reminder's `starts_at`) are read in this zone. Defaults to `Asia/Kolkata` when absent; an unknown name is `400 invalid_timezone`. */
+                "x-timezone"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -7754,13 +8377,40 @@ export interface operations {
                     "application/json": unknown;
                 };
             };
-            /** @description Validation Error */
+            /** @description Bad request, e.g. `invalid_mobile_number` */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ... */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found, or you are not a member: `circle_not_found` */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon` */
             422: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
         };
@@ -7826,6 +8476,1160 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_conversations_api_v1_conversations_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                cursor?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConversationListOut"];
+                };
+            };
+            /** @description Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ... */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    delete_all_conversations_api_v1_conversations_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeletedOut"];
+                };
+            };
+            /** @description Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ... */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    get_conversation_api_v1_conversations__conversation_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                conversation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConversationOut"];
+                };
+            };
+            /** @description Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ... */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found, or you are not a member: `circle_not_found` */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    delete_conversation_api_v1_conversations__conversation_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                conversation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ... */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found, or you are not a member: `circle_not_found` */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    rename_conversation_api_v1_conversations__conversation_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                conversation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConversationTitleIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConversationOut"];
+                };
+            };
+            /** @description Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ... */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found, or you are not a member: `circle_not_found` */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    list_messages_api_v1_conversations__conversation_id__messages_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                before?: string | null;
+            };
+            header?: never;
+            path: {
+                conversation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageListOut"];
+                };
+            };
+            /** @description Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ... */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found, or you are not a member: `circle_not_found` */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    login_url_api_v1_spotify_login_url_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginUrlIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoginUrlOut"];
+                };
+            };
+            /** @description Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ... */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Dependency unavailable, e.g. `otp_send_failed` */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    status_api_v1_spotify_status_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StatusOut"];
+                };
+            };
+            /** @description Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ... */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description An upstream service failed, e.g. `spotify_error` */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Dependency unavailable, e.g. `otp_send_failed` */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    now_playing_api_v1_spotify_now_playing_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NowPlayingOut"];
+                };
+            };
+            /** @description Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ... */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict, e.g. `mobile_number_taken`, `invalid_circle_state`, `contact_limit_reached` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description An upstream service failed, e.g. `spotify_error` */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Dependency unavailable, e.g. `otp_send_failed` */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    player_api_v1_spotify_player_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlayerIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NowPlayingOut"];
+                };
+            };
+            /** @description Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ... */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Your role cannot do this: `insufficient_role` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict, e.g. `mobile_number_taken`, `invalid_circle_state`, `contact_limit_reached` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description An upstream service failed, e.g. `spotify_error` */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Dependency unavailable, e.g. `otp_send_failed` */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    recent_api_v1_spotify_recent_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MediaPageOut"];
+                };
+            };
+            /** @description Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ... */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Your role cannot do this: `insufficient_role` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict, e.g. `mobile_number_taken`, `invalid_circle_state`, `contact_limit_reached` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description An upstream service failed, e.g. `spotify_error` */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Dependency unavailable, e.g. `otp_send_failed` */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    top_api_v1_spotify_top_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                /** @description short_term: about 4 weeks, medium_term: 6 months, long_term: about a year */
+                time_range?: "short_term" | "medium_term" | "long_term";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MediaPageOut"];
+                };
+            };
+            /** @description Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ... */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Your role cannot do this: `insufficient_role` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict, e.g. `mobile_number_taken`, `invalid_circle_state`, `contact_limit_reached` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description An upstream service failed, e.g. `spotify_error` */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Dependency unavailable, e.g. `otp_send_failed` */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    liked_api_v1_spotify_liked_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MediaPageOut"];
+                };
+            };
+            /** @description Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ... */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Your role cannot do this: `insufficient_role` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict, e.g. `mobile_number_taken`, `invalid_circle_state`, `contact_limit_reached` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description An upstream service failed, e.g. `spotify_error` */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Dependency unavailable, e.g. `otp_send_failed` */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    playlists_api_v1_spotify_playlists_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MediaPageOut"];
+                };
+            };
+            /** @description Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ... */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Your role cannot do this: `insufficient_role` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict, e.g. `mobile_number_taken`, `invalid_circle_state`, `contact_limit_reached` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description An upstream service failed, e.g. `spotify_error` */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Dependency unavailable, e.g. `otp_send_failed` */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    playlist_tracks_api_v1_spotify_playlists__playlist_id__tracks_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                playlist_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MediaPageOut"];
+                };
+            };
+            /** @description Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ... */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Your role cannot do this: `insufficient_role` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found, or you are not a member: `circle_not_found` */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict, e.g. `mobile_number_taken`, `invalid_circle_state`, `contact_limit_reached` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description An upstream service failed, e.g. `spotify_error` */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Dependency unavailable, e.g. `otp_send_failed` */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    album_tracks_api_v1_spotify_albums__album_id__tracks_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                album_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MediaPageOut"];
+                };
+            };
+            /** @description Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ... */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict, e.g. `mobile_number_taken`, `invalid_circle_state`, `contact_limit_reached` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description An upstream service failed, e.g. `spotify_error` */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Dependency unavailable, e.g. `otp_send_failed` */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    search_api_v1_spotify_search_get: {
+        parameters: {
+            query: {
+                q: string;
+                /** @description Comma-separated: track, artist, album, playlist */
+                types?: string;
+                /** @description Per type */
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SearchOut"];
+                };
+            };
+            /** @description Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ... */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict, e.g. `mobile_number_taken`, `invalid_circle_state`, `contact_limit_reached` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description An upstream service failed, e.g. `spotify_error` */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Dependency unavailable, e.g. `otp_send_failed` */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    play_api_v1_spotify_play_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlayIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NowPlayingOut"];
+                };
+            };
+            /** @description Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ... */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Your role cannot do this: `insufficient_role` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict, e.g. `mobile_number_taken`, `invalid_circle_state`, `contact_limit_reached` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation error (see `fields`), or a precondition such as `profile_name_required`, `reminder_too_soon` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description An upstream service failed, e.g. `spotify_error` */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Dependency unavailable, e.g. `otp_send_failed` */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    unlink_api_v1_spotify_link_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authenticated: `missing_token`, `invalid_token`, `session_revoked`, `invalid_otp`, ... */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Dependency unavailable, e.g. `otp_send_failed` */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
         };

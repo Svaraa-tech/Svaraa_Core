@@ -61,11 +61,6 @@ export type DrillOut = {
   acknowledged_by?: string | null;
 };
 
-/** POST /chat/. Leave out session_id on the first message; send back the one the server returns. */
-export type ChatIn = { session_id?: string | null; message: string };
-/** The server starts a new session (new id) when the old one expired: idle for 4 hours, or a server restart. */
-export type ChatOut = { session_id: string; response: string; expires_at: string };
-
 /**
  * Endpoints the app needs that the live server does not have yet, in the same shape as schema.d.ts (see the note at
  * the top). None right now: news moved to the real API (GET /news, GET /news/filters).

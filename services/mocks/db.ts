@@ -27,6 +27,8 @@ type Db = {
   claimed: Map<string, MockDevice>;
   /** User id -> their notes (services/mocks/notes.ts), newest first. */
   notes: Map<string, MockNote[]>;
+  /** User id -> that person's Spotify link (services/mocks/spotify.ts). */
+  spotify: Map<string, MockSpotify>;
 };
 
 /** A claimed pendant, in the real API's shape plus the household that holds it. */
@@ -35,6 +37,9 @@ export type MockDevice = S['DeviceOut'] & { householdId: string };
 export type MockContact = S['ContactIn'] & { id: string };
 /** A note as the mock keeps it: the API shape, how many times it was read, and whether processing will fail. */
 export type MockNote = S['NoteOut'] & { reads: number; willFail: boolean };
+
+/** A phone's Spotify link as the mock keeps it: whether it is connected, what is playing, and the volume. */
+export type MockSpotify = { connected: boolean; playing: boolean; index: number; volume: number };
 
 /** What the mock backend keeps per household during setup. */
 export type HouseholdSetup = {
@@ -63,6 +68,7 @@ const fresh = (): Db => ({
   setup: new Map(),
   claimed: new Map(),
   notes: new Map(),
+  spotify: new Map(),
 });
 let db = fresh();
 
@@ -225,6 +231,15 @@ export function householdOf(userId: string, householdId: string): HouseholdOut |
 
 /** The setup record of a household (only households created through POST /circles have one). */
 /** The user's notes, newest first (created on first use). */
+export function spotifyOf(userId: string): MockSpotify {
+  let link = db.spotify.get(userId);
+  if (!link) {
+    link = { connected: false, playing: false, index: 0, volume: 50 };
+    db.spotify.set(userId, link);
+  }
+  return link;
+}
+
 export function notesOf(userId: string): MockNote[] {
   let list = db.notes.get(userId);
   if (!list) db.notes.set(userId, (list = []));

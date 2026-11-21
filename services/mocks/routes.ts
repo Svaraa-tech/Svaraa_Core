@@ -1,9 +1,9 @@
 import i18n from '@/i18n';
-import type { ChatIn, ChatOut } from '@/services/api/pending';
 import type { components } from '@/services/api/schema';
 import { newsFilters, sampleNewsPage } from './news';
 import * as reminders from './reminders';
 import * as music from './music';
+import * as spotify from './spotify';
 import * as notes from './notes';
 import {
   ackDrillFor,
@@ -22,6 +22,7 @@ import {
   mobileTakenBy,
   openSession,
   otpOnCooldown,
+  spotifyOf,
   refreshAccess,
   revokeSession,
   savePushTokenFor,
@@ -67,6 +68,23 @@ const fail = (status: number, code: string, message: string): MockResult => ({
   body: { error: { code, message, request_id: 'mock' } },
 });
 const NO_CONTENT: MockResult = { status: 204 };
+
+function isTimeZone(zone: string): boolean {
+  try {
+    new Intl.DateTimeFormat('en', { timeZone: zone });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** A Spotify library call for the signed-in user who has connected Spotify, or the error the server would send. */
+function spotifyBrowse(headers: Headers, run: (userId: string) => MockResult): MockResult {
+  const auth = authenticate(headers);
+  if ('code' in auth) return fail(401, auth.code, 'Invalid or expired token');
+  if (!spotifyOf(auth.user.id).connected) return fail(409, 'conflict', 'Spotify is not connected');
+  return run(auth.user.id);
+}
 
 /** A notes call for the signed-in user: its answer, or the error the server would send. */
 function noteResult(headers: Headers, run: (userId: string) => unknown, okStatus = 200): MockResult {
@@ -618,6 +636,119 @@ export const routes: MockRoute[] = [
       return track ? { status: 200, body: track } : fail(404, 'not_found', 'Track not found');
     },
   },
+  // Spotify (flags.spotifyApi): PENDING BACKEND stand-in. Asking for the login link connects the signed-in user.
+  {
+    method: 'POST',
+    path: `${API}/spotify/login-url`,
+    respond: ({ body, headers }) => {
+      const auth = authenticate(headers);
+      if ('code' in auth) return fail(401, auth.code, 'Invalid or expired token');
+      spotifyOf(auth.user.id).connected = true;
+      return { status: 200, body: { url: spotify.loginUrl() } satisfies S['LoginUrlOut'] };
+    },
+  },
+  {
+    method: 'GET',
+    path: `${API}/spotify/status`,
+    respond: ({ headers }) => {
+      const auth = authenticate(headers);
+      if ('code' in auth) return fail(401, auth.code, 'Invalid or expired token');
+      return { status: 200, body: spotify.status(spotifyOf(auth.user.id)) };
+    },
+  },
+  {
+    method: 'GET',
+    path: `${API}/spotify/now-playing`,
+    respond: ({ headers }) => {
+      const auth = authenticate(headers);
+      if ('code' in auth) return fail(401, auth.code, 'Invalid or expired token');
+      const link = spotifyOf(auth.user.id);
+      if (!link.connected) return fail(409, 'conflict', 'Spotify is not connected');
+      return { status: 200, body: spotify.nowPlaying(link) };
+    },
+  },
+  {
+    method: 'POST',
+    path: `${API}/spotify/player`,
+    respond: ({ body, headers }) => {
+      const auth = authenticate(headers);
+      if ('code' in auth) return fail(401, auth.code, 'Invalid or expired token');
+      const link = spotifyOf(auth.user.id);
+      if (!link.connected) return fail(409, 'conflict', 'Spotify is not connected');
+      const out = spotify.command(link, (body ?? {}) as Partial<S['PlayerIn']>);
+      return out ? { status: 200, body: out } : fail(422, 'validation_error', 'Invalid request');
+    },
+  },
+  {
+    method: 'GET',
+    path: `${API}/spotify/recent`,
+    respond: ({ headers, query }) =>
+      spotifyBrowse(headers, () => ({ status: 200, body: spotify.recent(query) })),
+  },
+  {
+    method: 'GET',
+    path: `${API}/spotify/top`,
+    respond: ({ headers, query }) =>
+      spotifyBrowse(headers, () => ({ status: 200, body: spotify.top(query) })),
+  },
+  {
+    method: 'GET',
+    path: `${API}/spotify/liked`,
+    respond: ({ headers, query }) =>
+      spotifyBrowse(headers, () => ({ status: 200, body: spotify.liked(query) })),
+  },
+  {
+    method: 'GET',
+    path: `${API}/spotify/playlists`,
+    respond: ({ headers, query }) =>
+      spotifyBrowse(headers, () => ({ status: 200, body: spotify.playlists(query) })),
+  },
+  {
+    method: 'GET',
+    path: `${API}/spotify/playlists/{playlist_id}/tracks`,
+    respond: ({ headers, params, query }) =>
+      spotifyBrowse(headers, () => {
+        const out = spotify.playlistTracks(params.playlist_id ?? '', query);
+        return out
+          ? { status: 200, body: out }
+          : fail(403, 'spotify_playlist_not_listable', 'Spotify does not list this playlist');
+      }),
+  },
+  {
+    method: 'GET',
+    path: `${API}/spotify/albums/{album_id}/tracks`,
+    respond: ({ headers, query }) =>
+      spotifyBrowse(headers, () => ({ status: 200, body: spotify.albumTracks(query) })),
+  },
+  {
+    method: 'GET',
+    path: `${API}/spotify/search`,
+    respond: ({ headers, query }) =>
+      spotifyBrowse(headers, () => {
+        const out = spotify.search(query?.get('q'));
+        return out ? { status: 200, body: out } : fail(422, 'validation_error', 'Invalid request');
+      }),
+  },
+  {
+    method: 'POST',
+    path: `${API}/spotify/play`,
+    respond: ({ body, headers }) =>
+      spotifyBrowse(headers, (userId) => {
+        const uri = (body as Partial<S['PlayIn']> | undefined)?.uri;
+        if (!uri) return fail(422, 'validation_error', 'Invalid request');
+        return { status: 200, body: spotify.playUri(spotifyOf(userId), uri) };
+      }),
+  },
+  {
+    method: 'DELETE',
+    path: `${API}/spotify/link`,
+    respond: ({ headers }) => {
+      const auth = authenticate(headers);
+      if ('code' in auth) return fail(401, auth.code, 'Invalid or expired token');
+      spotifyOf(auth.user.id).connected = false;
+      return NO_CONTENT;
+    },
+  },
   // Reminders (flags.remindersApi): the same rules and limits as the server, times read in this computer's zone.
   {
     method: 'GET',
@@ -753,18 +884,26 @@ export const routes: MockRoute[] = [
       return { status: 200, body: newsFilters };
     },
   },
-  // Text chat (flags.ai). A fixed sample reply in the app's language; like the real server, no sign-in needed.
+  // Text chat (flags.ai). A fixed sample reply in the app's language. Like the real server, it needs sign-in.
+  // The conversation history (/conversations) has no mock: with the 'mock' switch the app keeps its chats in memory.
   {
     method: 'POST',
     path: `${API}/chat/`,
-    respond: ({ body }) => {
-      const { message, session_id } = (body ?? {}) as Partial<ChatIn>;
+    respond: ({ body, headers }) => {
+      const auth = authenticate(headers);
+      if ('code' in auth) return fail(401, auth.code, 'Invalid or expired token');
+      // Like the server: a time zone name it does not know is 400 invalid_timezone (none = Asia/Kolkata).
+      const zone = headers.get('x-timezone');
+      if (zone && !isTimeZone(zone)) return fail(400, 'invalid_timezone', 'Unknown time zone');
+      const { message, conversation_id, session_id } = (body ?? {}) as Partial<S['ChatRequest']>;
       if (typeof message !== 'string' || !message.trim())
         return fail(422, 'validation_error', 'Invalid request');
-      const out: ChatOut = {
-        session_id: session_id || `mock-chat-${Date.now()}`,
+      const id = conversation_id || session_id || newId();
+      const out: S['ChatResponse'] = {
+        conversation_id: id,
+        session_id: id,
         response: i18n.t('chat.reply'),
-        expires_at: new Date(Date.now() + 4 * 3_600_000).toISOString(),
+        events: [],
       };
       return { status: 200, body: out };
     },

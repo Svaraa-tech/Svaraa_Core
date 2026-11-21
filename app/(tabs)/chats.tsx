@@ -1,5 +1,5 @@
 import { Scene } from '@/features/main/Scene';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +8,7 @@ import { useChat } from '@/features/chat/store';
 import { useNewChat } from '@/features/main/useNewChat';
 import { MainTop } from '@/features/main/TopBar';
 import { useMainPalette } from '@/features/main/palette';
-import { Text, useTheme } from '@/ui';
+import { Button, Text, useTheme } from '@/ui';
 
 /** D · All chats: "Your chats", a search field, the count, and each chat with when its last message was. */
 export default function AllChats() {
@@ -19,7 +19,14 @@ export default function AllChats() {
   const p = useMainPalette();
   const ago = useTimeAgo();
   const [q, setQ] = useState('');
+  const [sure, setSure] = useState(false);
+  const [clearing, setClearing] = useState(false);
+  const [failed, setFailed] = useState(false);
   const conversations = useChat((s) => s.conversations);
+  const loadHistory = useChat((s) => s.loadHistory);
+  useEffect(() => {
+    void loadHistory();
+  }, [loadHistory]);
   const list = conversations
     .filter((c) => !q.trim() || c.title.toLowerCase().includes(q.trim().toLowerCase()))
     .sort((a, b) => b.updatedAt - a.updatedAt);
@@ -75,7 +82,7 @@ export default function AllChats() {
                   borderBottomColor: p.line,
                 })}
               >
-                <Text style={{ color: p.ink }}>{c.title}</Text>
+                <Text style={{ color: p.ink }}>{c.title || t('chat.untitled')}</Text>
                 <Text variant="caption" style={{ color: p.muted }}>
                   {t('chat.lastMessage', { time: ago(c.updatedAt) })}
                 </Text>
@@ -85,6 +92,34 @@ export default function AllChats() {
         ) : (
           <Text style={{ color: p.muted, padding: 12 }}>{t('chat.noMatchesFor', { q })}</Text>
         )}
+        {conversations.length ? (
+          <View style={{ gap: 8, marginTop: 8 }}>
+            {failed ? (
+              <Text tone="safety" accessibilityRole="alert">
+                {t('chat.deleteFailed')}
+              </Text>
+            ) : null}
+            <Button
+              label={sure ? t('chat.deleteAllSure') : t('chat.deleteAll')}
+              variant={sure ? 'safety' : 'secondary'}
+              loading={clearing}
+              onPress={() => {
+                if (!sure) return setSure(true);
+                setClearing(true);
+                setFailed(false);
+                void useChat
+                  .getState()
+                  .clearAll()
+                  .catch(() => setFailed(true))
+                  .finally(() => {
+                    setClearing(false);
+                    setSure(false);
+                  });
+              }}
+              fullWidth
+            />
+          </View>
+        ) : null}
       </ScrollView>
     </Scene>
   );
