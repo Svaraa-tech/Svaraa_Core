@@ -121,7 +121,9 @@ describe('C8 · Test your SOS', () => {
     await act(async () => await startViaSos());
     await flush();
     expect(screen.getByText(/Calling Meera/)).toBeTruthy();
-    await act(async () => await fireEvent.press(screen.getByRole('button', { name: 'Skip to next contact' })));
+    await act(
+      async () => await fireEvent.press(screen.getByRole('button', { name: 'Skip to next contact' })),
+    );
     expect(screen.getByText(/Calling Ravi/)).toBeTruthy();
   });
 
@@ -136,8 +138,12 @@ describe('C8 · Test your SOS', () => {
     await renderApp(<SosDrill />);
     await act(async () => await startViaSos());
     await flush();
-    await act(async () => await fireEvent.press(screen.getByRole('button', { name: 'Skip to next contact' })));
-    await act(async () => await fireEvent.press(screen.getByRole('button', { name: 'Skip to next contact' })));
+    await act(
+      async () => await fireEvent.press(screen.getByRole('button', { name: 'Skip to next contact' })),
+    );
+    await act(
+      async () => await fireEvent.press(screen.getByRole('button', { name: 'Skip to next contact' })),
+    );
     expect(screen.getByText('Next: emergency services')).toBeTruthy();
     await act(async () => await fireEvent.press(screen.getByRole('button', { name: 'Override SOS check' })));
     await flush();

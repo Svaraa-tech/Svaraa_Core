@@ -29,12 +29,7 @@ export function YouTubeView() {
         {YOUTUBE_VIDEOS.map((video) => {
           const selected = video.id === activeId;
           return (
-            <VideoRow
-              key={video.id}
-              video={video}
-              selected={selected}
-              onSelect={() => play(video.id)}
-            />
+            <VideoRow key={video.id} video={video} selected={selected} onSelect={() => play(video.id)} />
           );
         })}
       </MusicScroll>

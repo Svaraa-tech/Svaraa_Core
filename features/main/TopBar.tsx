@@ -90,9 +90,7 @@ function useBarParts() {
     newChat,
     search: <IconButton icon="search" label={t('chat.search')} onPress={() => router.navigate('/chats')} />,
     bell: <IconButton icon="bell" label={t('main.alerts')} onPress={() => router.push('/alerts')} />,
-    avatar: (
-      <Avatar initial={initial} label={t('tabs.profile')} onPress={() => openMyProfile(router)} />
-    ),
+    avatar: <Avatar initial={initial} label={t('tabs.profile')} onPress={() => openMyProfile(router)} />,
     wide,
   };
 }

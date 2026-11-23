@@ -12,11 +12,7 @@ export function StepHeader({ step, title }: { step?: number; title: string }) {
   const router = useRouter();
   return (
     <View style={{ gap: theme.space[2] }}>
-      <Button
-        label={t('common.back')}
-        variant="tertiary"
-        onPress={() => safeBack(router)}
-      />
+      <Button label={t('common.back')} variant="tertiary" onPress={() => safeBack(router)} />
       <Text variant="kicker" tone="spirit">
         {step ? t('steps.progress', { current: step, total: WEARER_PATH_STEPS }) : t('wearer.optional')}
       </Text>

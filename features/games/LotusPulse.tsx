@@ -88,7 +88,9 @@ export function LotusPulse() {
   const world = useRef(RUN.width);
 
   // Fit the Apps pane (beside chat on web): height capped, width from onLayout only.
-  const stageH = Math.round(wide ? Math.min(440, Math.max(360, win.height * 0.48)) : Math.min(520, Math.max(360, win.height * 0.55)));
+  const stageH = Math.round(
+    wide ? Math.min(440, Math.max(360, win.height * 0.48)) : Math.min(520, Math.max(360, win.height * 0.55)),
+  );
   const w = measured && measured > 0 ? measured : 360;
   const u = Math.min(w / 70, stageH / 55);
   const vw = w / u;

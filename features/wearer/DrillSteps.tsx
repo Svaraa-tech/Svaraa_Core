@@ -69,8 +69,9 @@ export function DrillSteps({
   const c = theme.colors;
   const { status } = drill;
   /** Extra ring slots jumped by Skip (client-side; backend only knows waiting/passed/expired). */
-  const [skips, setSkips] = useState(0);
-  useEffect(() => setSkips(0), [drill.id]);
+  // Keyed by drill id, so a new drill starts at 0 without setting state inside an effect.
+  const [skipState, setSkipState] = useState({ id: drill.id, count: 0 });
+  const skips = skipState.id === drill.id ? skipState.count : 0;
 
   const total = Math.max(1, Math.round((Date.parse(drill.expires_at) - Date.parse(drill.started_at)) / 1000));
   const clockElapsed = Math.min(total, Math.max(0, total - secondsLeft));
@@ -229,18 +230,13 @@ export function DrillSteps({
           <Button
             label={t('wearer.drill.skip')}
             variant="secondary"
-            onPress={() => setSkips((n) => n + 1)}
+            onPress={() => setSkipState({ id: drill.id, count: skips + 1 })}
             fullWidth
           />
         ) : null}
         {emergencyNow && onOverride ? (
           <>
-            <Button
-              label={t('wearer.drill.override')}
-              onPress={onOverride}
-              loading={overriding}
-              fullWidth
-            />
+            <Button label={t('wearer.drill.override')} onPress={onOverride} loading={overriding} fullWidth />
             <Text variant="bodySm" tone="secondary" style={{ textAlign: 'center' }}>
               {t('wearer.drill.overrideHint')}
             </Text>

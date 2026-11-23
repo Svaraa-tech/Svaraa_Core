@@ -104,7 +104,13 @@ export function YouTubeEmbed({ video, autoplay }: { video: YoutubeVideo; autopla
             </View>
             <Text
               variant="bodySm"
-              style={{ color: '#FFF', marginTop: 8, fontWeight: '600', textShadowColor: '#000', textShadowRadius: 6 }}
+              style={{
+                color: '#FFF',
+                marginTop: 8,
+                fontWeight: '600',
+                textShadowColor: '#000',
+                textShadowRadius: 6,
+              }}
             >
               {t('music.youtube.tapToPlay')}
             </Text>

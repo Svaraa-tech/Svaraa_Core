@@ -23,7 +23,11 @@ export default function AddPhone() {
           {t('auth.phone.addTitle')}
         </Text>
         <Text tone="secondary">{t('auth.phone.addSubtitle')}</Text>
-        <PhoneVerify onRequest={requestMobile} onVerify={verifyMobile} onVerified={() => router.replace('/')} />
+        <PhoneVerify
+          onRequest={requestMobile}
+          onVerify={verifyMobile}
+          onVerified={() => router.replace('/')}
+        />
         {/* Not a way around the step: signing out leaves the account as it was. */}
         <Button label={t('profile.signOut')} variant="tertiary" onPress={() => void logout()} />
       </Card>

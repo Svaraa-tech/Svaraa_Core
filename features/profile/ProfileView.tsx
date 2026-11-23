@@ -213,9 +213,7 @@ export function ProfileView() {
               <HomeBackgroundPicker />
             </Card>
 
-            {__DEV__ ? (
-              <ListRow title={t('profile.dev')} onPress={() => router.push('/components')} />
-            ) : null}
+            {__DEV__ ? <ListRow title={t('profile.dev')} onPress={() => router.push('/components')} /> : null}
 
             <Button
               label={t('profile.signOut')}

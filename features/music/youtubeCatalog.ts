@@ -77,15 +77,7 @@ export const YOUTUBE_VIDEOS: readonly YoutubeVideo[] = [
     si: 'CBmhFQFvNxmIv8RZ',
     title: 'Nirvana Shatakam (1 Hour)',
     channel: 'Sounds of Isha',
-    keywords: [
-      'nirvana',
-      'shatakam',
-      'adi shankara',
-      'shankaracharya',
-      'meditation',
-      'निर्वाण',
-      'षट्कम',
-    ],
+    keywords: ['nirvana', 'shatakam', 'adi shankara', 'shankaracharya', 'meditation', 'निर्वाण', 'षट्कम'],
   },
   {
     id: 'ZpPYC5NYyZY',

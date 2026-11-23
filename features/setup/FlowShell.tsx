@@ -48,19 +48,24 @@ export function FlowShell({
 
   const leftInner = equalBoxes ? stretchFill(childList[0]) : children;
 
-  const body = wide && side ? (
-    <Columns
-      equalHeight={equalBoxes}
-      left={<View style={{ flex: equalBoxes ? 1 : undefined, width: '100%', gap: theme.space[4] }}>{leftInner}</View>}
-      right={<View style={{ flex: equalBoxes ? 1 : undefined, width: '100%' }}>{side}</View>}
-    />
-  ) : (
-    <View style={{ gap: theme.space[4], flexGrow: 1 }}>
-      {children}
-      {/* Phone / narrow web: product under the form, same order as the old Home layout. */}
-      {side}
-    </View>
-  );
+  const body =
+    wide && side ? (
+      <Columns
+        equalHeight={equalBoxes}
+        left={
+          <View style={{ flex: equalBoxes ? 1 : undefined, width: '100%', gap: theme.space[4] }}>
+            {leftInner}
+          </View>
+        }
+        right={<View style={{ flex: equalBoxes ? 1 : undefined, width: '100%' }}>{side}</View>}
+      />
+    ) : (
+      <View style={{ gap: theme.space[4], flexGrow: 1 }}>
+        {children}
+        {/* Phone / narrow web: product under the form, same order as the old Home layout. */}
+        {side}
+      </View>
+    );
 
   return (
     <View
@@ -95,7 +100,10 @@ function stretchFill(child: ReactNode): ReactNode {
   const el = child as ReactElement<{ style?: ViewStyle | ViewStyle[] }>;
   const prev = el.props.style;
   return cloneElement(el, {
-    style: [ { flex: 1, width: '100%', alignSelf: 'stretch' } as ViewStyle, ...(Array.isArray(prev) ? prev : prev ? [prev] : []) ],
+    style: [
+      { flex: 1, width: '100%', alignSelf: 'stretch' } as ViewStyle,
+      ...(Array.isArray(prev) ? prev : prev ? [prev] : []),
+    ],
   });
 }
 

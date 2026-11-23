@@ -41,7 +41,7 @@ export function glassStyle(opts: {
   return {
     ...style,
     // RN web accepts these CSS properties.
-    ...( {
+    ...({
       backdropFilter: `blur(${blur}px) saturate(1.45)`,
       WebkitBackdropFilter: `blur(${blur}px) saturate(1.45)`,
       boxShadow: `${drop}, ${inset}`,

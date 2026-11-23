@@ -139,7 +139,8 @@ function showButton(gsi: Gsi, onClose: () => void): () => void {
   ].join(';');
 
   const header = document.createElement('div');
-  header.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:12px;padding:8px 12px 0;text-align:center';
+  header.style.cssText =
+    'display:flex;flex-direction:column;align-items:center;gap:12px;padding:8px 12px 0;text-align:center';
 
   const brand = document.createElement('img');
   brand.src = assetUrl(MARK[dark ? 'dark' : 'light']);

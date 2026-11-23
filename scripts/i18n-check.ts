@@ -100,6 +100,4 @@ if (errors.length) {
   console.error(`i18n:check found ${errors.length} problem(s):\n` + errors.map((e) => `  - ${e}`).join('\n'));
   process.exit(1);
 }
-console.log(
-  `i18n:check OK (${Object.keys(en).length} keys; en/hi full; ${PARTIAL.join('/')} overlays)`,
-);
+console.log(`i18n:check OK (${Object.keys(en).length} keys; en/hi full; ${PARTIAL.join('/')} overlays)`);

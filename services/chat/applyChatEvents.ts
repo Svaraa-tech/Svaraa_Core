@@ -144,14 +144,13 @@ async function applyContactAdded(event: ChatEvent): Promise<void> {
 
   const next: EmergencyContact = {
     name,
-    relationship: typeof c.relationship === 'string' && c.relationship.trim() ? c.relationship.trim() : undefined,
+    relationship:
+      typeof c.relationship === 'string' && c.relationship.trim() ? c.relationship.trim() : undefined,
     countryCode,
     mobile,
   };
   const wearer = useWearer.getState();
-  const exists = wearer.contacts.some(
-    (p) => p.countryCode === next.countryCode && p.mobile === next.mobile,
-  );
+  const exists = wearer.contacts.some((p) => p.countryCode === next.countryCode && p.mobile === next.mobile);
   if (exists) return;
   await wearer.save({ contacts: [...wearer.contacts, next] });
 }

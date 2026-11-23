@@ -17,14 +17,22 @@ export function mockYoutubeChat(message: string): Parsed | null {
   if (!text) return null;
   const lower = text.toLowerCase();
 
-  if (/\b(pause|stop)\b.*\b(youtube|video)\b|\b(youtube|video)\b.*\b(pause|stop)\b|यूट्यूब.*(रोको|बंद)/i.test(lower)) {
+  if (
+    /\b(pause|stop)\b.*\b(youtube|video)\b|\b(youtube|video)\b.*\b(pause|stop)\b|यूट्यूब.*(रोको|बंद)/i.test(
+      lower,
+    )
+  ) {
     const action = /\bpause\b|रोको/.test(lower) ? 'pause' : 'stop';
     return {
       response: i18n.t(`chat.mock.youtube.${action}`),
       events: [{ type: 'youtube', action }],
     };
   }
-  if (/\b(next|skip)\b.*\b(youtube|video)\b|\b(youtube|video)\b.*\b(next|skip)\b|अगला.*(यूट्यूब|वीडियो)/i.test(lower)) {
+  if (
+    /\b(next|skip)\b.*\b(youtube|video)\b|\b(youtube|video)\b.*\b(next|skip)\b|अगला.*(यूट्यूब|वीडियो)/i.test(
+      lower,
+    )
+  ) {
     return {
       response: i18n.t('chat.mock.youtube.next'),
       events: [{ type: 'youtube', action: 'next' }],

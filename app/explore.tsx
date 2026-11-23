@@ -10,11 +10,7 @@ export default function Explore() {
   const pageWidth = usePageWidth();
   return (
     <Screen maxWidth={pageWidth}>
-      <Button
-        label={t('common.back')}
-        variant="tertiary"
-        onPress={() => safeBack(router)}
-      />
+      <Button label={t('common.back')} variant="tertiary" onPress={() => safeBack(router)} />
       <Text variant="title1" tone="heading" accessibilityRole="header">
         {t('home.explore')}
       </Text>

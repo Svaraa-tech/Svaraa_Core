@@ -51,7 +51,9 @@ export function mockProfileChat(message: string): Parsed | null {
   const scheme =
     matchScheme(lower) ??
     (/\b(dark|light)\s+mode\b/.test(lower)
-      ? (/dark/.test(lower) ? 'dark' : 'light')
+      ? /dark/.test(lower)
+        ? 'dark'
+        : 'light'
       : /\bfollow\s+(the\s+)?phone\b|\bsystem\s+(theme|display)\b/.test(lower)
         ? 'system'
         : undefined);
@@ -84,7 +86,8 @@ export function mockProfileChat(message: string): Parsed | null {
     };
   }
 
-  const pendantCallAs = /\bon the pendant\b/i.test(text) || /\bsvaraa(?:'s)?\s+call(?:s)?\s+me\b/i.test(lower);
+  const pendantCallAs =
+    /\bon the pendant\b/i.test(text) || /\bsvaraa(?:'s)?\s+call(?:s)?\s+me\b/i.test(lower);
   const callAs = text.match(
     /\b(?:svaraa(?:'s)?\s+call(?:s)?\s+me|call me)\s+([A-Za-z][\w'-]{0,40})(?:\s+on the pendant)?/i,
   );
@@ -134,11 +137,7 @@ export function mockProfileChat(message: string): Parsed | null {
     const name = contact[1].trim();
     const country_code = contact[2] ?? '+91';
     const mobile_number = (contact[3] ?? '9812344410').replace(/\D/g, '');
-    const relationship = lower.includes('daughter')
-      ? 'Daughter'
-      : lower.includes('son')
-        ? 'Son'
-        : undefined;
+    const relationship = lower.includes('daughter') ? 'Daughter' : lower.includes('son') ? 'Son' : undefined;
     return {
       response: i18n.t('chat.mock.contact', { name, phone: `${country_code} ${mobile_number}` }),
       events: [
