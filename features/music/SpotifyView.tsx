@@ -132,7 +132,11 @@ export function SpotifyView() {
 
   // Connected: same pane height, scroll only when library / devices need it.
   return (
-    <MusicScroll maxHeight={paneH || MUSIC_SECTION_HEIGHT} framed contentContainerStyle={{ gap: theme.space[3], padding: 10 }}>
+    <MusicScroll
+      maxHeight={paneH || MUSIC_SECTION_HEIGHT}
+      framed
+      contentContainerStyle={{ gap: theme.space[3], padding: 10 }}
+    >
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.space[2] }}>
         <Text style={{ color: p.ink, fontWeight: '700', flexShrink: 1 }}>
           {t('music.spotify.connectedAs', { name: status.data?.display_name ?? 'Spotify' })}
@@ -331,7 +335,9 @@ function SpotifyConnectCard({
   return (
     <View
       style={{
-        height,
+        // minHeight, not height: on a phone the content is taller than the pane, and a fixed height with
+        // overflow hidden clipped the Connect button at the bottom. The card now grows to fit.
+        minHeight: height,
         paddingHorizontal: compact ? 14 : 18,
         paddingTop: compact ? 12 : 16,
         paddingBottom: compact ? 12 : 16,
@@ -339,10 +345,9 @@ function SpotifyConnectCard({
         backgroundColor: plumBg,
         borderWidth: 1,
         borderColor: p.line2,
-        overflow: 'hidden',
       }}
     >
-      <View style={{ flex: 1, justifyContent: 'space-between' }}>
+      <View style={{ flexGrow: 1, justifyContent: 'space-between', gap: compact ? 8 : 12 }}>
         <View style={{ alignItems: 'center', gap: compact ? 8 : 12 }}>
           <View
             accessibilityLabel={t('music.tabSpotify')}
