@@ -1,9 +1,9 @@
 import { act, fireEvent, screen } from '@testing-library/react-native';
 import i18n from '@/i18n';
-import Profile from '@/app/(tabs)/profile';
 import AddContact from '@/app/wearer/contact';
 import EditProfile from '@/app/edit-profile';
 import { useHousehold } from '@/features/household/store';
+import { ProfileView } from '@/features/profile/ProfileView';
 import { useSettings } from '@/features/settings/store';
 import { useWearer } from '@/features/wearer/store';
 import { verifyOtpAndSignIn } from '@/services/auth/authApi';
@@ -52,7 +52,7 @@ beforeEach(async () => {
 
 describe('My Profile · edit', () => {
   it('has Edit for the details and a Change button for each contact', async () => {
-    await renderApp(<Profile />);
+    await renderApp(<ProfileView />);
     await fireEvent.press(screen.getByRole('button', { name: 'Edit' }));
     expect(mockPush).toHaveBeenCalledWith('/edit-profile');
     await fireEvent.press(screen.getAllByRole('button', { name: /^Change/ })[1]!);
