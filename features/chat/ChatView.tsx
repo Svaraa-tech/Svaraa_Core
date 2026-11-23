@@ -9,7 +9,7 @@ import { Platform, Pressable, ScrollView, TextInput, View } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { DotPill, RoundButton, Segmented, useMainPalette } from '@/features/main/palette';
-import { Logo, LogoMark, Text, fontFamily, useTheme } from '@/ui';
+import { glassStyle, LogoMark, Text, fontFamily, useTheme } from '@/ui';
 import { useHousehold } from '@/features/household/store';
 import { useReminderSchedule } from '@/features/reminders/store';
 import { useChat, usePendingCount, type ChatMessage } from './store';
@@ -162,6 +162,9 @@ export function ChatView({ compact, centered }: { compact?: boolean; centered?: 
   return (
     <View style={{ flex: 1, minHeight: 0 }}>
       <VoiceOverlay where="pane" />
+      {/* Hide chat while Talk is open so messages/composer cannot show through the voice layer. */}
+      {voiceOpen ? null : (
+      <>
       <ScrollView
         ref={scroll}
         keyboardShouldPersistTaps="handled"
@@ -198,7 +201,9 @@ export function ChatView({ compact, centered }: { compact?: boolean; centered?: 
               maxWidth: 320,
             }}
           >
-            <Logo height={64} />
+            <View accessible accessibilityLabel={t('chat.emptyTitle')}>
+              <LogoMark size={64} />
+            </View>
             <View accessibilityLiveRegion="polite">
               <DotPill label={t('chat.working', { count: pending })} bordered={false} />
             </View>
@@ -256,20 +261,25 @@ export function ChatView({ compact, centered }: { compact?: boolean; centered?: 
               submit();
             }
           }}
-          style={{
-            minHeight: compact ? 46 : 70,
-            maxHeight: 160,
-            textAlignVertical: 'top',
-            backgroundColor: p.card,
-            borderWidth: 1,
-            borderColor: p.line2,
-            borderRadius: compact ? 24 : 20,
-            paddingVertical: compact ? 12 : 13,
-            paddingHorizontal: 16,
-            color: p.ink,
-            fontFamily: fontFamily(i18n.language, body),
-            fontSize: 15.5 * theme.fontScale,
-          }}
+          style={[
+            glassStyle({
+              scheme: theme.scheme,
+              fill: p.card,
+              border: p.line2,
+              kind: 'card',
+              radius: compact ? 24 : 22,
+            }),
+            {
+              minHeight: compact ? 46 : 70,
+              maxHeight: 160,
+              textAlignVertical: 'top',
+              paddingVertical: compact ? 12 : 13,
+              paddingHorizontal: 16,
+              color: p.ink,
+              fontFamily: fontFamily(i18n.language, body),
+              fontSize: 15.5 * theme.fontScale,
+            },
+          ]}
         />
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 10 }}>
           <View style={{ flex: 1 }}>
@@ -320,6 +330,8 @@ export function ChatView({ compact, centered }: { compact?: boolean; centered?: 
           </Text>
         ) : null}
       </View>
+      </>
+      )}
     </View>
   );
 }
