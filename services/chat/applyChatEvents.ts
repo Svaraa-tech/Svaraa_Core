@@ -17,6 +17,7 @@ import { WEARER_LANGUAGES, type WearerLanguage } from '@/features/wearer/languag
 import { useWearer, type EmergencyContact } from '@/features/wearer/store';
 import { useMusicPlayer } from '@/features/music/player';
 import { useYouTubePlayer } from '@/features/music/youtubePlayer';
+import { onSpotifyStarted } from '@/features/music/onePlayer';
 import type { Track } from '@/services/music/musicApi';
 
 const SCHEMES: readonly SchemePreference[] = ['light', 'dark', 'system'];
@@ -69,6 +70,11 @@ async function applyOne(event: ChatEvent): Promise<void> {
   }
   if (type === 'music') {
     await applyMusic(event, action);
+    return;
+  }
+  if (type === 'spotify' && action === 'play') {
+    // Svaraa started a song on the user's Spotify. The server sent `music stop` first; YouTube is ours to stop.
+    onSpotifyStarted();
     return;
   }
   if (type === 'youtube') {

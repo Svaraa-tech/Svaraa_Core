@@ -12,10 +12,13 @@ import {
   getSpotifyStatus,
   playItem,
   sendPlayerCommand,
+  SPOTIFY_NOW_KEY,
+  SPOTIFY_STATUS_KEY,
   type PlayerAction,
 } from '@/services/spotify/spotifyApi';
 import { Button, Text, glassStyle, useTheme } from '@/ui';
 import { MusicScroll, MUSIC_SECTION_HEIGHT } from './MusicScroll';
+import { stopAppPlayers } from './onePlayer';
 import { SpotifyBrowse } from './SpotifyBrowse';
 import { SPOTIFY_BLACK, SPOTIFY_GREEN, SPOTIFY_GREEN_PRESSED, SpotifyLogo } from './SpotifyLogo';
 
@@ -26,8 +29,8 @@ const CONNECT_POLL_FOR_MS = 2 * 60_000;
 /** While something plays, refresh the mini player this often. */
 const NOW_PLAYING_POLL_MS = 5000;
 
-const STATUS_KEY = ['spotify', 'status'] as const;
-const NOW_KEY = ['spotify', 'now-playing'] as const;
+const STATUS_KEY = SPOTIFY_STATUS_KEY;
+const NOW_KEY = SPOTIFY_NOW_KEY;
 
 /** Room left under Music chrome (tabs + Apps header + bottom nav). */
 function useSpotifyPaneHeight(): number {
@@ -77,12 +80,18 @@ export function SpotifyView() {
     onSettled: () => void queryClient.invalidateQueries({ queryKey: STATUS_KEY }),
   });
   const command = useMutation({
-    mutationFn: ({ action, volume }: { action: PlayerAction; volume?: number }) =>
-      sendPlayerCommand(action, volume),
+    mutationFn: ({ action, volume }: { action: PlayerAction; volume?: number }) => {
+      // Only one player at a time: starting Spotify stops the app's own players.
+      if (action === 'play') stopAppPlayers();
+      return sendPlayerCommand(action, volume);
+    },
     onSuccess: (out) => queryClient.setQueryData(NOW_KEY, out),
   });
   const playCard = useMutation({
-    mutationFn: ({ uri, context }: { uri: string; context?: string }) => playItem(uri, context),
+    mutationFn: ({ uri, context }: { uri: string; context?: string }) => {
+      stopAppPlayers();
+      return playItem(uri, context);
+    },
     onSuccess: (out) => queryClient.setQueryData(NOW_KEY, out),
   });
   const disconnect = useMutation({

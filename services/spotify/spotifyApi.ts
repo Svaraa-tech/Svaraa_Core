@@ -20,6 +20,10 @@ export type TopRange = 'short_term' | 'medium_term' | 'long_term';
 /** Songs per page for every list (the server's default for lists is 20). */
 export const PAGE_SIZE = 20;
 
+/** Query keys shared by the Spotify tab and by chat/voice events that start music. */
+export const SPOTIFY_STATUS_KEY = ['spotify', 'status'] as const;
+export const SPOTIFY_NOW_KEY = ['spotify', 'now-playing'] as const;
+
 /** The link that opens Spotify's own sign-in page. Valid 10 minutes, single use: ask for a new one each time. */
 export async function getLoginUrl(): Promise<string> {
   // `client` tells the server where to send the person after sign-in: back to the app (deep link) or the web app.

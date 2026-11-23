@@ -121,3 +121,9 @@ After setting `EXPO_PUBLIC_API_URL` to the Railway dev URL, switch one area at a
 - Reminder alerts: on the web they work only while the page is open (timers, one beep, banner, browser notification if allowed). Closed page: needs web push from the backend (subscription endpoint, a sender at `due_at`, a service worker here). On phones nothing alerts yet: register each `due_at` with the system (exact alarms on Android, local notifications on iOS) as `docs/reminders-design.md` in the backend describes, and repeat up to 3 times, 5 minutes apart, for `repeat_until_confirmed`. Browsers slow timers in hidden tabs, so an alert can be up to about a minute late there.
 - Reminder answers (web banner: Done, Pending, Discuss, Dismiss): kept on this device only (`features/reminders/alertsStore.ts`, `// PENDING BACKEND`). The backend needs a row per time a reminder fired (`reminder_id`, `due_at`, status, who answered, when); the existing reminder `status` (active, paused) must not be reused. Open: what Pending should do (today it only records "not yet", no repeat alert), and "Discuss" opens a new chat with a prefilled message.
 - Responses app: the quick replies are still sample content (pending backend). Below them is the chat history, the same list as Chat (`GET /conversations`, `GET /conversations/{id}/messages`); read-only here, with "Continue in Chat".
+
+## One player at a time (FE-33)
+
+- Done on the frontend for backend PR #25: the `spotify` chat/voice event, the voice text frames, and the tap rules (Svaraa song pauses Spotify; Spotify card stops Svaraa and YouTube).
+- Not tried against the real server or a real Spotify account yet; chat events and voice frames run on mocks / unit tests only.
+- The YouTube collection is not known to the server, so the app stops it on its own when Spotify starts. Starting YouTube does not pause Spotify yet (not in the contract).
