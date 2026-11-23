@@ -8,7 +8,7 @@ import { listTracks, TRACK_CATEGORIES, type Track, type TrackCategory } from '@/
 import { Button, Choice, Input, Tabs, Text, useTheme } from '@/ui';
 import { MusicScroll } from './MusicScroll';
 import { MusicSeekBar } from './MusicSeekBar';
-import { pauseSpotifyForApp } from './onePlayer';
+import { beginSvaraaSong } from './onePlayer';
 import { NotPlayable, useMusicPlayer } from './player';
 import { SpotifyView } from './SpotifyView';
 import { YouTubeView } from './YouTubeView';
@@ -109,7 +109,7 @@ function SongsTab() {
                 onPress={
                   status === 'paused'
                     ? () => {
-                        void pauseSpotifyForApp();
+                        beginSvaraaSong();
                         resume();
                       }
                     : pause
@@ -191,7 +191,7 @@ function SongsTab() {
                   ) : undefined
                 }
                 onPress={() => {
-                  void pauseSpotifyForApp(); // only one player at a time
+                  beginSvaraaSong(); // only one player at a time
                   void play(tr);
                 }}
               />

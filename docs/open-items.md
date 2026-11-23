@@ -126,4 +126,4 @@ After setting `EXPO_PUBLIC_API_URL` to the Railway dev URL, switch one area at a
 
 - Done on the frontend for backend PR #25: the `spotify` chat/voice event, the voice text frames, and the tap rules (Svaraa song pauses Spotify; Spotify card stops Svaraa and YouTube).
 - Not tried against the real server or a real Spotify account yet; chat events and voice frames run on mocks / unit tests only.
-- The YouTube collection is not known to the server, so the app stops it on its own when Spotify starts. Starting YouTube does not pause Spotify yet (not in the contract).
+- The YouTube collection is not known to the server, so the app keeps it apart on its own: starting YouTube stops Svaraa's songs and pauses Spotify, and starting Svaraa's songs or Spotify stops YouTube.

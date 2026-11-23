@@ -1,5 +1,5 @@
 import i18n from '@/i18n';
-import { pauseSpotifyForApp } from '@/features/music/onePlayer';
+import { beginSvaraaSong, pauseSpotifyForApp } from '@/features/music/onePlayer';
 import { useMusicPlayer } from '@/features/music/player';
 import { useYouTubePlayer } from '@/features/music/youtubePlayer';
 import { verifyOtpAndSignIn } from '@/services/auth/authApi';
@@ -69,5 +69,32 @@ describe('one player at a time', () => {
     await expect(pauseSpotifyForApp()).resolves.toBeUndefined();
     expect(calls('/api/v1/spotify/player')).toBe(before);
     expect(requests.some((r) => r.path === '/api/v1/spotify/status')).toBe(true);
+  });
+
+  it("starting a YouTube video stops Svaraa's song and pauses Spotify", async () => {
+    await getLoginUrl();
+    await sendPlayerCommand('play');
+    useMusicPlayer.setState({ status: 'playing', track: { id: 't1' } as never });
+    useYouTubePlayer.getState().play('GvtLszZkXsk');
+    await new Promise((r) => setTimeout(r, 50));
+    expect(useMusicPlayer.getState().status).toBe('idle');
+    expect((await getNowPlaying()).is_playing).toBe(false);
+    expect(useYouTubePlayer.getState().activeId).toBe('GvtLszZkXsk');
+  });
+
+  it("starting Svaraa's song stops YouTube and pauses Spotify", async () => {
+    await getLoginUrl();
+    await sendPlayerCommand('play');
+    useYouTubePlayer.setState({ activeId: 'GvtLszZkXsk', source: 'youtube' });
+    beginSvaraaSong();
+    await new Promise((r) => setTimeout(r, 50));
+    expect(useYouTubePlayer.getState().activeId).toBeNull();
+    expect((await getNowPlaying()).is_playing).toBe(false);
+  });
+
+  it("a chat 'music play' event stops YouTube", async () => {
+    useYouTubePlayer.setState({ activeId: 'GvtLszZkXsk', source: 'youtube' });
+    await applyChatEvents([{ type: 'music', action: 'resume' }]);
+    expect(useYouTubePlayer.getState().activeId).toBeNull();
   });
 });

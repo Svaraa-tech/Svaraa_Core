@@ -174,6 +174,7 @@ function splitE164(e164: string): { countryCode: string; mobile: string } {
 
 async function applyMusic(event: ChatEvent, action: string): Promise<void> {
   const player = useMusicPlayer.getState();
+  if (action === 'play' || action === 'resume') useYouTubePlayer.getState().stop(); // one player at a time
   if (action === 'play') {
     const tracks = event.tracks;
     const first = Array.isArray(tracks) ? tracks[0] : undefined;
