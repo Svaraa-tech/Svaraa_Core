@@ -17,7 +17,13 @@ const mockPush = jest.fn();
 const mockBack = jest.fn();
 let mockParams: Record<string, string> = {};
 jest.mock('expo-router', () => ({
-  useRouter: () => ({ replace: jest.fn(), push: mockPush, navigate: mockPush, back: mockBack }),
+  useRouter: () => ({
+    replace: jest.fn(),
+    push: mockPush,
+    navigate: mockPush,
+    back: mockBack,
+    canGoBack: () => true,
+  }),
   useLocalSearchParams: () => mockParams,
   useIsFocused: () => true,
   usePathname: () => '/profile',
@@ -99,7 +105,8 @@ describe('My Profile · contacts', () => {
       { name: 'Ravi Rao', relationship: null, country_code: '+91', mobile_number: '9912347821' },
     ]);
     expect(useWearer.getState().contacts[1]?.name).toBe('Ravi Rao');
-    expect(mockBack).toHaveBeenCalled();
+    // From My Profile the screen now returns to the Profile pane inside Apps (openMyProfile), not router.back().
+    expect(mockPush).toHaveBeenCalledWith('/apps');
   });
 
   it('adds a third contact and removes one', async () => {

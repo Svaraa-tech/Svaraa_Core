@@ -28,7 +28,7 @@ export default function SosDrill() {
   const router = useRouter();
   const errorText = useErrorText();
   const setupDone = useHousehold((s) => s.hasActiveDevice);
-  const { drill, start, starting, acknowledge, acknowledging, ackError, error, secondsLeft } = useDrill();
+  const { drill, starting, acknowledge, acknowledging, ackError, error, secondsLeft } = useDrill();
   const contacts = useWearer((s) => s.contacts);
   const [finishing, setFinishing] = useState(false);
   const [tab, setTab] = useState<'run' | 'history'>('run');
