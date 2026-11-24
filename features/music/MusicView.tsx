@@ -8,6 +8,7 @@ import { listTracks, TRACK_CATEGORIES, type Track, type TrackCategory } from '@/
 import { Button, Choice, Input, Tabs, Text, useTheme } from '@/ui';
 import { MusicScroll } from './MusicScroll';
 import { MusicSeekBar } from './MusicSeekBar';
+import { beginSvaraaSong } from './onePlayer';
 import { NotPlayable, useMusicPlayer } from './player';
 import { SpotifyView } from './SpotifyView';
 import { YouTubeView } from './YouTubeView';
@@ -105,7 +106,14 @@ function SongsTab() {
             <View style={{ flex: 1 }}>
               <Button
                 label={status === 'paused' ? t('music.play') : t('music.pause')}
-                onPress={status === 'paused' ? resume : pause}
+                onPress={
+                  status === 'paused'
+                    ? () => {
+                        beginSvaraaSong();
+                        resume();
+                      }
+                    : pause
+                }
                 disabled={status === 'loading' || status === 'idle'}
                 loading={status === 'loading'}
                 fullWidth
@@ -182,7 +190,10 @@ function SongsTab() {
                     <Pill label={t('music.soon')} />
                   ) : undefined
                 }
-                onPress={() => void play(tr)}
+                onPress={() => {
+                  beginSvaraaSong(); // only one player at a time
+                  void play(tr);
+                }}
               />
             );
           })}

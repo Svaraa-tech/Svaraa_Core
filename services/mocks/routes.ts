@@ -1,6 +1,7 @@
 import i18n from '@/i18n';
 import type { components } from '@/services/api/schema';
 import { mockProfileChat } from './chatProfile';
+import { mockSpotifyChat } from './chatSpotify';
 import { mockYoutubeChat } from './chatYoutube';
 import { newsFilters, sampleNewsPage } from './news';
 import * as reminders from './reminders';
@@ -907,9 +908,10 @@ export const routes: MockRoute[] = [
       if (typeof message !== 'string' || !message.trim())
         return fail(422, 'validation_error', 'Invalid request');
       const id = conversation_id || session_id || newId();
-      const youtube = mockYoutubeChat(message);
-      const profile = youtube ? null : mockProfileChat(message);
-      const matched = youtube ?? profile;
+      const spotifyAsk = mockSpotifyChat(message);
+      const youtube = spotifyAsk ? null : mockYoutubeChat(message);
+      const profile = spotifyAsk || youtube ? null : mockProfileChat(message);
+      const matched = spotifyAsk ?? youtube ?? profile;
       const out: S['ChatResponse'] = {
         conversation_id: id,
         session_id: id,

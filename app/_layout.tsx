@@ -17,11 +17,10 @@ import { restoreLanguage } from '@/features/settings/language';
 import { useSettings } from '@/features/settings/store';
 import { useWearer } from '@/features/wearer/store';
 import { startMocks } from '@/services/mocks';
+import { queryClient } from '@/services/queryClient';
 import { useSession } from '@/services/auth/session';
 import { keepPushTokenSaved } from '@/services/notifications/notificationsApi';
 import { ThemeProvider, fontAssets, useTheme } from '@/ui';
-
-const queryClient = new QueryClient();
 
 /** Keeps per-person data in step with who is signed in. */
 function useSessionEffects() {

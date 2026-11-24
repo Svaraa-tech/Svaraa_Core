@@ -707,6 +707,9 @@
         "pause": "Paused YouTube.",
         "stop": "Stopped YouTube.",
         "next": "Playing the next YouTube video."
+      },
+      "spotify": {
+        "playing": "Playing “{{title}}” on Spotify."
       }
     }
   },

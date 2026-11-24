@@ -1,4 +1,5 @@
 import { env } from '@/config/env';
+import { applyChatEvents } from '@/services/chat/applyChatEvents';
 import type { VoiceHandlers, VoiceSession, VoiceState } from './voiceScripted';
 
 /**
@@ -149,6 +150,9 @@ export function startSocketVoice(handlers: VoiceHandlers): VoiceSession {
       if (typeof e.data === 'string') {
         try {
           const frame = JSON.parse(e.data) as { type?: string; session_id?: string };
+          // Tool events (music, spotify, youtube, settings, ...) arrive as text frames between reply_start and the audio.
+          // applyChatEvents ignores any type it does not know, as the contract asks.
+          if (frame.type && frame.type !== 'session') void applyChatEvents([frame]);
           if (frame.type === 'session' && frame.session_id) {
             lastSessionId = frame.session_id;
             clearTimeout(connectTimer);

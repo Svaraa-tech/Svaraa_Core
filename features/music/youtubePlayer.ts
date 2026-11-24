@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { useOpenApp } from '@/features/apps/openApp';
+import { useMusicPlayer } from './player';
+import { pauseSpotifyForApp } from './spotifyPause';
 import { YOUTUBE_VIDEOS, youtubeById } from './youtubeCatalog';
 
 type MusicSource = 'songs' | 'spotify' | 'youtube';
@@ -15,6 +17,12 @@ type State = {
   pause: () => void;
   next: () => void;
 };
+
+/** Only one player at a time: a YouTube video is starting, so Svaraa's songs stop and Spotify pauses. */
+function takeOverFromOthers() {
+  useMusicPlayer.getState().stop();
+  void pauseSpotifyForApp();
+}
 
 function openMusicApp() {
   useOpenApp.getState().setOpen('music');
@@ -34,6 +42,7 @@ export const useYouTubePlayer = create<State>((set, get) => ({
   setSource: (source) => set({ source }),
   play: (videoId) => {
     if (!youtubeById(videoId)) return;
+    takeOverFromOthers();
     set({ activeId: videoId, source: 'youtube' });
     openMusicApp();
   },
@@ -45,6 +54,7 @@ export const useYouTubePlayer = create<State>((set, get) => ({
     const cur = get().activeId;
     const i = cur ? list.findIndex((v) => v.id === cur) : -1;
     const next = list[(i + 1) % list.length];
+    takeOverFromOthers();
     set({ activeId: next.id, source: 'youtube' });
     openMusicApp();
   },

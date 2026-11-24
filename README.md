@@ -1,7 +1,7 @@
 # Svaraa Core
 
 Expo + TypeScript (strict) + Expo Router. iOS, Android, web (caregiver screens only).
-Rules for people and AI tools: [`CLAUDE.md`](CLAUDE.md). Plan: [`docs/frontend-plan.md`](docs/frontend-plan.md).
+Rules for people and AI tools: [`CLAUDE.md`](CLAUDE.md). Plan: [`docs/frontend-plan.md`](docs/frontend-plan.md). Developer guide: [`docs/development/`](docs/development/README.md).
 
 ## Run
 
@@ -12,8 +12,8 @@ npm run web      # browser
 npm run start:dev # development build (after an EAS development build)
 ```
 
-The first screen is the component demo (`app/(dev)/components.tsx`): every component, in both themes and both languages.
-Mocks are on by default (`EXPO_PUBLIC_USE_MOCKS=true`). Demo one-time code: `000000`.
+Component demo (every component, both themes and languages): route `/components` (`app/(dev)/components.tsx`).
+Mocks are on by default (`EXPO_PUBLIC_USE_MOCKS=true`). Mock one-time code: `000000` (the real dev server accepts `0000`).
 
 ## Checks (CI runs all of them)
 
@@ -23,15 +23,15 @@ npm run lint && npm run typecheck && npm test && npm run i18n:check && npm run b
 
 ## Folders
 
-| Folder      | What                                                                     |
-| ----------- | ------------------------------------------------------------------------ |
-| `app/`      | Screens only                                                             |
-| `features/` | auth, circles, devices, invites, consent, sos, settings                  |
-| `services/` | api (generated client), mocks (MSW), storage; pendant, voice, push later |
-| `ui/`       | tokens, caregiver + wearer themes, components                            |
-| `i18n/`     | `en.json`, `hi.json`                                                     |
-| `config/`   | env, feature flags                                                       |
-| `docs/`     | plan, wireframes, UI guide, source documents                             |
+| Folder      | What                                                                                   |
+| ----------- | -------------------------------------------------------------------------------------- |
+| `app/`      | Screens only                                                                           |
+| `features/` | household, wearer, pendant, chat, apps, music, news, notes, reminders, games, settings |
+| `services/` | api (generated client), mocks (MSW), storage; pendant, voice, push later               |
+| `ui/`       | tokens, caregiver + wearer themes, components                                          |
+| `i18n/`     | `en.json`, `hi.json`                                                                   |
+| `config/`   | env, feature flags                                                                     |
+| `docs/`     | plan, wireframes, UI guide, source documents                                           |
 
 ## API client
 
