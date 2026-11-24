@@ -86,7 +86,7 @@ sequenceDiagram
 - This section describes what the **app's code does today**. The backend code (read 24 Nov, deployment unconfirmed) has moved on: the socket accepts
   `Authorization: Bearer <token>` or `?token=`, an optional `conversation_id`, and `reply_format=pcm16&reply_rate=16000`; it sends `reply_start`
   and `reply_end` text frames and saves each turn to chat history. The app sends none of this yet, so voice is not tied to the person's account and
-  the app guesses the end of a reply by a 1 s gap. **Update `voiceSocket.ts` once the backend confirms** (see [Questions](backend-questions.md)).
+  the app guesses the end of a reply by a 1 s gap. **Update `voiceSocket.ts`** once the backend confirms the deployed version.
 - Speech recognition on the server is **Hindi only** for now (to confirm).
 - The microphone is muted while Svaraa speaks, so it does not answer itself. A new call within 30 idle minutes continues the session (`lastSessionId`).
 - Timeouts: connect 60 s (Render wake-up), 20 s with no reply returns to listening.
