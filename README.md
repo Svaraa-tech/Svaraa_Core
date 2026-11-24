@@ -1,7 +1,7 @@
 # Svaraa Core
 
 Expo + TypeScript (strict) + Expo Router. iOS, Android, web (caregiver screens only).
-Rules for people and AI tools: [`CLAUDE.md`](CLAUDE.md). Plan: [`docs/frontend-plan.md`](docs/frontend-plan.md).
+Rules for people and AI tools: [`CLAUDE.md`](CLAUDE.md). Plan: [`docs/frontend-plan.md`](docs/frontend-plan.md). Developer guide: [`docs/development/`](docs/development/README.md).
 
 ## Run
 
@@ -12,8 +12,8 @@ npm run web      # browser
 npm run start:dev # development build (after an EAS development build)
 ```
 
-The first screen is the component demo (`app/(dev)/components.tsx`): every component, in both themes and both languages.
-Mocks are on by default (`EXPO_PUBLIC_USE_MOCKS=true`). Demo one-time code: `000000`.
+Component demo (every component, both themes and languages): route `/components` (`app/(dev)/components.tsx`).
+Mocks are on by default (`EXPO_PUBLIC_USE_MOCKS=true`). Mock one-time code: `000000` (the real dev server accepts `0000`).
 
 ## Checks (CI runs all of them)
 

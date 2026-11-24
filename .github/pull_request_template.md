@@ -21,3 +21,6 @@
 - [ ] Tested on a phone (Expo Go)
 - [ ] `npm run i18n:check` passes
 - [ ] Tests pass (`npm test`)
+- [ ] `npm run lint`, `npm run typecheck` and `npm run format:check` pass
+- [ ] Colours from tokens, "caregiver" / "household" wording, mocked endpoints marked `// PENDING BACKEND`
+- [ ] Docs updated (`docs/integration.md`, `docs/open-items.md`, `docs/development/02-features.md`)
