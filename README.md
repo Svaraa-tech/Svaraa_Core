@@ -23,15 +23,15 @@ npm run lint && npm run typecheck && npm test && npm run i18n:check && npm run b
 
 ## Folders
 
-| Folder      | What                                                                     |
-| ----------- | ------------------------------------------------------------------------ |
-| `app/`      | Screens only                                                             |
-| `features/` | auth, circles, devices, invites, consent, sos, settings                  |
-| `services/` | api (generated client), mocks (MSW), storage; pendant, voice, push later |
-| `ui/`       | tokens, caregiver + wearer themes, components                            |
-| `i18n/`     | `en.json`, `hi.json`                                                     |
-| `config/`   | env, feature flags                                                       |
-| `docs/`     | plan, wireframes, UI guide, source documents                             |
+| Folder      | What                                                                                   |
+| ----------- | -------------------------------------------------------------------------------------- |
+| `app/`      | Screens only                                                                           |
+| `features/` | household, wearer, pendant, chat, apps, music, news, notes, reminders, games, settings |
+| `services/` | api (generated client), mocks (MSW), storage; pendant, voice, push later               |
+| `ui/`       | tokens, caregiver + wearer themes, components                                          |
+| `i18n/`     | `en.json`, `hi.json`                                                                   |
+| `config/`   | env, feature flags                                                                     |
+| `docs/`     | plan, wireframes, UI guide, source documents                                           |
 
 ## API client
 

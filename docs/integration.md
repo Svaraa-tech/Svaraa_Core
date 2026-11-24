@@ -66,7 +66,7 @@ Reminder alerts on the web (page open only): the app reads `GET /circles/{id}/re
 1. In `.env`: `EXPO_PUBLIC_REAL_AREAS=auth,googleSignIn,ai` (the code defaults stay `'mock'`, so tests are unaffected).
 2. Run `npm run web:server -- --clear`. It serves on port 5173, the only browser address the Render server accepts (CORS).
 3. Google: set `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` and add `http://localhost:5173` to that client's "Authorized JavaScript origins" in Google Cloud Console.
-4. On web, sign-in is kept in memory only: reloading the page signs you out.
+4. On web the session is kept in `localStorage` (`services/secureStorage.web.ts`), so a reload stays signed in.
 
 ## How to check it worked
 

@@ -38,8 +38,8 @@ flowchart TB
 
   MOB -->|HTTPS + bearer token| REST
   WEB -->|HTTPS + bearer token, CORS| REST
-  MOB -->|"WSS: 16 kHz PCM up, MP3 down"| WS
-  WEB -->|"WSS (call screen)"| WS
+  MOB -.->|"WSS - needs native audio, not built"| WS
+  WEB -->|"WSS: 16 kHz PCM up, MP3 down"| WS
   MOB <-->|"Bluetooth (BLE) - planned"| PEN
   MOB -.->|"simulator over in-app transport (today)"| PEN
   MOB -->|native Google sign-in| GG
@@ -69,9 +69,9 @@ Notes on the diagram:
   is `'simulator'`. See `services/pendant/`.
 - **The app never holds a provider key.** Groq, Deepgram, ElevenLabs, TextBee, Spotify secrets and Supabase keys live only on the backend. The app
   holds only public `EXPO_PUBLIC_*` values (API URL, Google client IDs).
-- **Voice.** The Talk screen streams microphone audio to `WS /voice/ws` and plays MP3 replies. Today the call view plays a scripted
-  conversation (`services/voice/voiceSession.ts`) until the socket format and token handling are settled. Chat-mic dictation on web uses
-  the browser's own speech to text and then `POST /chat/`.
+- **Voice.** Only the **browser** streams microphone audio to `WS /voice/ws` and plays the MP3 replies (`services/voice/voiceSocket.ts`). Phones
+  and tests play a scripted demo (`voiceScripted.ts`) until native mic streaming and audio playback exist (needs a development build). The
+  socket accepts no sign-in token yet. Chat-mic dictation on web uses the browser's own speech to text and then `POST /chat/`.
 - The backend and `docs/openapi.json` call a household a **circle**; only `services/household/` maps the two.
 
 ## 2. Inside the app
@@ -86,11 +86,11 @@ flowchart LR
   SW -->|mock| MK["MSW (web) / fetch mock (phone)"]
   SW -->|real| NET["openapi-fetch client<br/>authedFetch: bearer token, refresh on 401"]
   NET --> API[("Backend")]
-  SVC --> SEC["secure storage (phone) / memory (web)"]
+  SVC --> SEC["secure store (phone) / localStorage (web)"]
 ```
 
 State: TanStack Query holds server data, Zustand holds app state, `expo-secure-store` holds the session on phones. On web the session is kept in
-memory only, so a reload signs you out (see [Features](02-features.md)).
+`localStorage`, so a reload stays signed in; tokens there can be read by any script on the page.
 
 ## 3. Data flows
 
@@ -211,12 +211,12 @@ mock switches and `EXPO_PUBLIC_SHOW_DEV_OTP_HINT`.
 
 ## 5. Where secrets live
 
-| Secret / key                                                                     | Lives in                       | Never in the app |
-| -------------------------------------------------------------------------------- | ------------------------------ | ---------------- |
-| `JWT_SECRET`, `DATABASE_URL`, `REDIS_URL`                                        | Backend env (Render)           | yes              |
-| Groq, Deepgram, ElevenLabs, TextBee, Spotify client secret, Supabase service key | Backend env (Render)           | yes              |
-| Google OAuth client IDs, API URL, WS URL                                         | App (`EXPO_PUBLIC_*`, public)  | n/a              |
-| User tokens                                                                      | Phone secure store; web memory | n/a              |
+| Secret / key                                                                     | Lives in                               | Never in the app |
+| -------------------------------------------------------------------------------- | -------------------------------------- | ---------------- |
+| `JWT_SECRET`, `DATABASE_URL`, `REDIS_URL`                                        | Backend env (Render)                   | yes              |
+| Groq, Deepgram, ElevenLabs, TextBee, Spotify client secret, Supabase service key | Backend env (Render)                   | yes              |
+| Google OAuth client IDs, API URL, WS URL                                         | App (`EXPO_PUBLIC_*`, public)          | n/a              |
+| User tokens                                                                      | Phone secure store; web `localStorage` | n/a              |
 
 ## 6. Known gaps in this picture
 

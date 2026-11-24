@@ -97,5 +97,5 @@ connection and checks: [`integration.md`](../integration.md).
 
 - "No connection" on every screen: check `EXPO_PUBLIC_API_URL` (no typo, no `/api/v1`), restart with `--clear`.
 - Web cannot reach the real API: the backend's `CORS_ORIGINS` must include your origin (use `npm run web:server` for 5173).
-- Web sign-in is kept in memory only, so reloading signs you out (by design for now).
+- Web keeps the session in `localStorage` (`services/secureStorage.web.ts`), so a reload stays signed in. Older docs say otherwise; they are out of date.
 - Commit rejected: see [Contributing](../../CONTRIBUTING.md) for the branch and message rules.

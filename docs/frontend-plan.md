@@ -1,6 +1,6 @@
 # Svaraa Core — Frontend Plan & Timeline
 
-Nov 2, 2026 · Pragati. Source: `docs/source/frontend-plan-timeline.docx`.
+Nov 2, 2026 · Pragati. This is the original plan; for how things are today read `docs/development/`. Source: `docs/source/frontend-plan-timeline.docx`.
 
 ## Overview
 
@@ -9,7 +9,7 @@ Two frontend developers build the Svaraa app for iOS, Android and web. Internal 
 - All 28 screens from the wireframes, in English and Hindi.
 - Web: caregiver screens and the setup-link page only.
 - Pendant: simulator now, real Bluetooth later, with no screen changes.
-- Not now: music, news, reminders (the app is ready to add them).
+- Added since this plan: Chat, Apps (Notes, News, Music with Spotify and YouTube, Reminders, Games), My Profile, Manage apps. See `docs/development/02-features.md` for the current status.
 
 |            | FE-A                                 | FE-B                                   |
 | ---------- | ------------------------------------ | -------------------------------------- |
@@ -41,7 +41,7 @@ Each person reviews the other's code.
 ```
 svaraa-core/
 ├── app/        screens only (auth, onboarding, j/[token], main)
-├── features/   auth, circles, devices, invites, consent, sos
+├── features/   auth, household, wearer, pendant, chat, apps, music, news, notes, reminders, games, settings, ...
 ├── services/   api, pendant, voice, push   ← all outside calls
 ├── ui/         design system + caregiver/wearer themes
 ├── i18n/       en.json, hi.json
