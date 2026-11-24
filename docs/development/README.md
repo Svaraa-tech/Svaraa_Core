@@ -2,20 +2,21 @@
 
 Versioned with the code: when you check out a tag, you get the docs that describe that tag.
 
-| #   | Document                                         | Read it to...                                                       |
-| --- | ------------------------------------------------ | ------------------------------------------------------------------- |
-| 0   | [Architecture](ARCHITECTURE.md)                  | See how app, web, backend, voice, pendant and providers connect     |
-| 1   | [Local setup](01-local-setup.md)                 | Run the app and web locally; set `.env`; choose mock or real        |
-| 2   | [Features](02-features.md)                       | See each feature's status (done / partial / next version), limits   |
-| 3   | [Extending guide](03-extending.md)               | Add a feature without conflicts                                     |
-| 4   | [Deployment](04-deployment.md)                   | Make EAS builds and host the web build                              |
-| 5   | [Backend integration](05-backend-integration.md) | Understand the API layer, errors, sessions, mocks, contract changes |
-| 6   | [Routes and state](06-routes-and-state.md)       | See screens, auth guards, stores and what is saved on the device    |
-| 7   | [Testing](07-testing.md)                         | Run and write tests; know what is not covered                       |
-| 8   | [Pendant and voice](08-pendant-and-voice.md)     | Work on the pendant interface, simulator, BLE swap, voice socket    |
-| 9   | [Languages](09-i18n.md)                          | Add text, check Hindi, add a language                               |
-| 10  | [UI guide](../ui-guide/README.md)                | Use tokens, themes and components                                   |
-| 11  | [Contributing](../../CONTRIBUTING.md)            | Branches, commits, PRs, hooks, CI                                   |
+| #   | Document                                               | Read it to...                                                       |
+| --- | ------------------------------------------------------ | ------------------------------------------------------------------- |
+| 0   | [Architecture](ARCHITECTURE.md)                        | See how app, web, backend, voice, pendant and providers connect     |
+| 1   | [Local setup](01-local-setup.md)                       | Run the app and web locally; set `.env`; choose mock or real        |
+| 2   | [Features](02-features.md)                             | See each feature's status (done / partial / next version), limits   |
+| 2b  | [Questions for the backend team](backend-questions.md) | Open questions, in simple words, to confirm with backend            |
+| 3   | [Extending guide](03-extending.md)                     | Add a feature without conflicts                                     |
+| 4   | [Deployment](04-deployment.md)                         | Make EAS builds and host the web build                              |
+| 5   | [Backend integration](05-backend-integration.md)       | Understand the API layer, errors, sessions, mocks, contract changes |
+| 6   | [Routes and state](06-routes-and-state.md)             | See screens, auth guards, stores and what is saved on the device    |
+| 7   | [Testing](07-testing.md)                               | Run and write tests; know what is not covered                       |
+| 8   | [Pendant and voice](08-pendant-and-voice.md)           | Work on the pendant interface, simulator, BLE swap, voice socket    |
+| 9   | [Languages](09-i18n.md)                                | Add text, check Hindi, add a language                               |
+| 10  | [UI guide](../ui-guide/README.md)                      | Use tokens, themes and components                                   |
+| 11  | [Contributing](../../CONTRIBUTING.md)                  | Branches, commits, PRs, hooks, CI                                   |
 
 Related, older documents that stay as they are: [`frontend-plan.md`](../frontend-plan.md) (plan and tickets),
 [`integration.md`](../integration.md) (per-endpoint backend status), [`open-items.md`](../open-items.md) (postponed work),

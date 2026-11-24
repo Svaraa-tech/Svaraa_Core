@@ -30,7 +30,7 @@ flowchart TB
     GG["Google sign-in<br/>OAuth ID token"]
     LLM["Groq<br/>LLM + web search"]
     STT["Deepgram<br/>speech to text"]
-    TTS["ElevenLabs<br/>text to speech"]
+    TTS["edge-tts (per backend code; ElevenLabs key still in .env.example)<br/>text to speech"]
     SMS["TextBee SMS<br/>(OTP; dev uses fixed code 0000)"]
     SP["Spotify Web API"]
     OBS["Grafana Cloud<br/>OpenTelemetry"]
@@ -67,11 +67,11 @@ Notes on the diagram:
 - **The phone is the pendant's gateway.** The pendant has no screen or internet of its own in this design; the wearer's phone pairs with it
   (the app stores the Bluetooth `pendant_id` when activating). Real BLE (`react-native-ble-plx`) is not built: `flags.pendantTransport`
   is `'simulator'`. See `services/pendant/`.
-- **The app never holds a provider key.** Groq, Deepgram, ElevenLabs, TextBee, Spotify secrets and Supabase keys live only on the backend. The app
+- **The app never holds a provider key.** Groq, Deepgram, TextBee, Spotify secrets and Supabase keys live only on the backend. The app
   holds only public `EXPO_PUBLIC_*` values (API URL, Google client IDs).
 - **Voice.** Only the **browser** streams microphone audio to `WS /voice/ws` and plays the MP3 replies (`services/voice/voiceSocket.ts`). Phones
   and tests play a scripted demo (`voiceScripted.ts`) until native mic streaming and audio playback exist (needs a development build). The
-  socket accepts no sign-in token yet. Chat-mic dictation on web uses the browser's own speech to text and then `POST /chat/`.
+  the app's socket code sends no sign-in token yet, although the backend code accepts one (see [Features](02-features.md)). Chat-mic dictation on web uses the browser's own speech to text and then `POST /chat/`.
 - The backend and `docs/openapi.json` call a household a **circle**; only `services/household/` maps the two.
 
 ## 2. Inside the app
@@ -140,7 +140,7 @@ sequenceDiagram
   participant B as Backend
   participant L as Groq (LLM)
   participant D as Deepgram
-  participant E as ElevenLabs
+  participant E as Text to speech (edge-tts)
   A->>B: POST /chat/ (text, conversation_id, X-Timezone)
   B->>L: prompt + tools (web search, reminders, music, settings)
   L-->>B: reply + tool results
@@ -211,12 +211,12 @@ mock switches and `EXPO_PUBLIC_SHOW_DEV_OTP_HINT`.
 
 ## 5. Where secrets live
 
-| Secret / key                                                                     | Lives in                               | Never in the app |
-| -------------------------------------------------------------------------------- | -------------------------------------- | ---------------- |
-| `JWT_SECRET`, `DATABASE_URL`, `REDIS_URL`                                        | Backend env (Render)                   | yes              |
-| Groq, Deepgram, ElevenLabs, TextBee, Spotify client secret, Supabase service key | Backend env (Render)                   | yes              |
-| Google OAuth client IDs, API URL, WS URL                                         | App (`EXPO_PUBLIC_*`, public)          | n/a              |
-| User tokens                                                                      | Phone secure store; web `localStorage` | n/a              |
+| Secret / key                                                         | Lives in                               | Never in the app |
+| -------------------------------------------------------------------- | -------------------------------------- | ---------------- |
+| `JWT_SECRET`, `DATABASE_URL`, `REDIS_URL`                            | Backend env (Render)                   | yes              |
+| Groq, Deepgram, TextBee, Spotify client secret, Supabase service key | Backend env (Render)                   | yes              |
+| Google OAuth client IDs, API URL, WS URL                             | App (`EXPO_PUBLIC_*`, public)          | n/a              |
+| User tokens                                                          | Phone secure store; web `localStorage` | n/a              |
 
 ## 6. Known gaps in this picture
 

@@ -83,8 +83,11 @@ sequenceDiagram
   W-->>A: text frames with chat events (applied by applyChatEvents)
 ```
 
-- Speech recognition on the server is **Hindi only** for now. There is no reply text and no "reply finished" marker.
-- **The socket accepts no sign-in token yet** (and no `conversation_id`), so voice is not tied to the person's account; how it should take the token is open with the backend.
+- This section describes what the **app's code does today**. The backend code (read 24 Nov, deployment unconfirmed) has moved on: the socket accepts
+  `Authorization: Bearer <token>` or `?token=`, an optional `conversation_id`, and `reply_format=pcm16&reply_rate=16000`; it sends `reply_start`
+  and `reply_end` text frames and saves each turn to chat history. The app sends none of this yet, so voice is not tied to the person's account and
+  the app guesses the end of a reply by a 1 s gap. **Update `voiceSocket.ts` once the backend confirms** (see [Questions](backend-questions.md)).
+- Speech recognition on the server is **Hindi only** for now (to confirm).
 - The microphone is muted while Svaraa speaks, so it does not answer itself. A new call within 30 idle minutes continues the session (`lastSessionId`).
 - Timeouts: connect 60 s (Render wake-up), 20 s with no reply returns to listening.
 - Phones need a development build with native microphone streaming and audio playback before they can use the socket (`voiceSession.ts` is the swap point).
