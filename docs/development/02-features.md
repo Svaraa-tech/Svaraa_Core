@@ -3,7 +3,7 @@
 **Status key.** **Done**: built in the app, nothing the frontend still owes. **Partial**: usable, with named gaps. **Next version**: not built in the app
 (it may already exist on the backend: the table says so).
 
-**Backend column.** What the backend offers, from the endpoint list in [`docs/openapi.json`](../openapi.json) (80 paths, the live spec) and the
+**Backend column.** What the backend offers, from the endpoint list in [`docs/openapi.json`](../openapi.json) (100 operations; compared with `https://svaraa-backend.onrender.com/openapi.json` on 24 Nov 2026 and **identical**, so our copy is current; Swagger is at `/docs`) and the
 backend repo (`svaraa-backend`, read on 24 Nov 2026). "Checked" means someone tried the endpoint on the Render dev server directly (from
 [`integration.md`](../integration.md)); **nothing has been tried end to end from a phone**. Everything in the app still defaults to mocks (`config/flags.ts`).
 
