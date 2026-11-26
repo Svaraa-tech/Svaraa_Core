@@ -7,21 +7,6 @@ import {
   NotoSansDevanagari_600SemiBold,
 } from '@expo-google-fonts/noto-sans-devanagari';
 import {
-  NotoSansJP_400Regular,
-  NotoSansJP_500Medium,
-  NotoSansJP_600SemiBold,
-} from '@expo-google-fonts/noto-sans-jp';
-import {
-  NotoSansKR_400Regular,
-  NotoSansKR_500Medium,
-  NotoSansKR_600SemiBold,
-} from '@expo-google-fonts/noto-sans-kr';
-import {
-  NotoSansSC_400Regular,
-  NotoSansSC_500Medium,
-  NotoSansSC_600SemiBold,
-} from '@expo-google-fonts/noto-sans-sc';
-import {
   NotoSansTamil_400Regular,
   NotoSansTamil_500Medium,
   NotoSansTamil_600SemiBold,
@@ -44,26 +29,18 @@ export const fontAssets = {
   NotoSansTamil_400Regular,
   NotoSansTamil_500Medium,
   NotoSansTamil_600SemiBold,
-  NotoSansSC_400Regular,
-  NotoSansSC_500Medium,
-  NotoSansSC_600SemiBold,
-  NotoSansJP_400Regular,
-  NotoSansJP_500Medium,
-  NotoSansJP_600SemiBold,
-  NotoSansKR_400Regular,
-  NotoSansKR_500Medium,
-  NotoSansKR_600SemiBold,
 };
 
 const WEIGHT_SUFFIX = { '400': '400Regular', '500': '500Medium', '600': '600SemiBold' } as const;
 
-/** Scripts that need a dedicated Noto family (Latin faces lack glyphs). */
+/**
+ * Scripts that need a dedicated Noto family (Latin faces lack glyphs).
+ * Chinese, Japanese and Korean are not bundled (about 63 MB for three weights each). They use Inter, and Android draws
+ * their characters with the phone's own CJK font. Add the Noto CJK families back here when those languages ship.
+ */
 const SCRIPT_FACE: Record<string, string> = {
   hi: 'NotoSansDevanagari',
   ta: 'NotoSansTamil',
-  zh: 'NotoSansSC',
-  ja: 'NotoSansJP',
-  ko: 'NotoSansKR',
 };
 
 /**

@@ -73,7 +73,13 @@ export function areaOf(
   | 'notesApi'
   | undefined {
   if (path.startsWith('/api/v1/auth/') || path.startsWith('/api/v1/users/')) return 'auth';
-  if (path.startsWith('/api/v1/chat/')) return 'ai';
+  // Chat history belongs with chat: if chat is real, its conversations must be real too (not mocked).
+  if (
+    path.startsWith('/api/v1/chat/') ||
+    path === '/api/v1/conversations' ||
+    path.startsWith('/api/v1/conversations/')
+  )
+    return 'ai';
   if (/^\/api\/v1\/circles\/[^/]+\/reminders(\/|$)/.test(path)) return 'remindersApi';
   // Household setup (the backend calls a household a "circle"): the household, its pendant and Home's setup status.
   if (path.startsWith('/api/v1/circles') || path.startsWith('/api/v1/devices/') || path === '/api/v1/me/home')

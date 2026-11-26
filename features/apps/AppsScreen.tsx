@@ -1,6 +1,6 @@
 import { Scene } from '@/features/main/Scene';
 import { useEffect, useState } from 'react';
-import { Platform, Pressable, ScrollView, View } from 'react-native';
+import { BackHandler, Platform, Pressable, ScrollView, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ChatView } from '@/features/chat/ChatView';
@@ -269,6 +269,17 @@ export default function AppsScreen() {
   const setOpen = useOpenApp((s) => s.setOpen);
   const [split, setSplit] = useState(MIN_SPLIT);
   const [width, setWidth] = useState(0);
+
+  // An open app lives in this screen's state, not in the navigation stack. Without this, the Android back button
+  // leaves the Apps tab (to another screen) instead of returning to the apps grid.
+  useEffect(() => {
+    if (!open) return;
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      setOpen(undefined);
+      return true;
+    });
+    return () => sub.remove();
+  }, [open, setOpen]);
 
   return (
     <Scene>
