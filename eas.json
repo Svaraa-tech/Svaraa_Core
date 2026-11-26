@@ -13,8 +13,21 @@
     },
     "preview": {
       "distribution": "internal",
-      "android": { "buildType": "apk" },
-      "env": { "EXPO_PUBLIC_USE_MOCKS": "true" }
+      "android": {
+        "buildType": "apk",
+        "gradleCommand": ":app:assembleRelease -PreactNativeArchitectures=arm64-v8a"
+      },
+      "env": {
+        "EXPO_PUBLIC_APP_ENV": "dev",
+        "EXPO_PUBLIC_API_URL": "https://svaraa-backend.onrender.com",
+        "EXPO_PUBLIC_WS_URL": "wss://svaraa-backend.onrender.com",
+        "EXPO_PUBLIC_API_TIMEOUT_MS": "60000",
+        "EXPO_PUBLIC_USE_MOCKS": "true",
+        "EXPO_PUBLIC_REAL_AREAS": "auth,googleSignIn,ai,household,notifications,newsApi,remindersApi,musicApi,notesApi,spotifyApi",
+        "EXPO_PUBLIC_SETUP_LINK_HOST": "svaraa.ai",
+        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "565437612101-9n39i4vjohidj2h4hmsnch7hkvhrlafs.apps.googleusercontent.com",
+        "EXPO_PUBLIC_SHOW_DEV_OTP_HINT": "true"
+      }
     }
   },
   "submit": {}

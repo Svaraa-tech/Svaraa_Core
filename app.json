@@ -59,6 +59,17 @@
         }
       ],
       "expo-web-browser"
-    ]
+    ],
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "cfa37806-756f-4fd2-b1f8-c0da036d0cc7"
+      }
+    },
+    "owner": "svaraa-pragatis-team"
   }
 }
